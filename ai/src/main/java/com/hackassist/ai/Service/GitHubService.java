@@ -12,8 +12,16 @@ import com.hackassist.ai.repository.ProjectRepository;
 import com.hackassist.ai.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -34,8 +42,27 @@ public class GitHubService implements IGitHubService {
     @Override
     public List<GitHubRepository> fetchUserRepositories(String userToken) {
         log.info("Fetching repositories for user with token");
-        // TODO: Implement actual GitHub API integration with OAuth token
+        // TODO: Consider mapping API response to GitHubRepository entities
         return githubRepositoryRepository.findAll();
+    }
+
+    @Override
+    public List<Map<String, Object>> fetchUserRepositoriesFromGithub(String accessToken) {
+        String url = "https://api.github.com/user/repos?visibility=all&affiliation=owner,collaborator,organization_member&per_page=100";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+        );
+
+        return response.getBody() == null ? List.of() : response.getBody();
     }
     
     @Override

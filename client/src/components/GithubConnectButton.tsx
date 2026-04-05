@@ -15,9 +15,13 @@ export function GithubConnectButton({ connected, onConnect }: GithubConnectButto
         <CardDescription>Connect to unlock repository integrations later.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <Button variant={connected ? 'outline' : 'accent'} onClick={onConnect}>
+        <Button
+          variant={connected ? 'outline' : 'accent'}
+          onClick={connected ? undefined : onConnect}
+          disabled={connected}
+        >
           <Github size={18} />
-          {connected ? 'GitHub Connected ✅' : 'Connect GitHub'}
+          {connected ? 'GitHub Connected' : 'Connect GitHub'}
         </Button>
         <p className="text-xs text-white/50">No repositories are shown yet.</p>
       </CardContent>

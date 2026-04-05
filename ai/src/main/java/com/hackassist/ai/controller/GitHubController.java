@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import com.hackassist.ai.models.GitHubRepository;
 import com.hackassist.ai.models.GitCommit;
 import com.hackassist.ai.Service.IGitHubService;
@@ -22,6 +25,32 @@ public class GitHubController {
     
     @Autowired
     private IGitHubService githubService;
+
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
+
+    @GetMapping("/repos/me")
+    public ResponseEntity<?> getMyRepositories(OAuth2AuthenticationToken authentication) {
+        try {
+            if (authentication == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("GitHub auth required");
+            }
+            OAuth2AuthorizedClient client = authorizedClientService
+                    .loadAuthorizedClient("github", authentication.getName());
+            if (client == null || client.getAccessToken() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("GitHub access token not found");
+            }
+
+            String token = client.getAccessToken().getTokenValue();
+            List<Map<String, Object>> repos = githubService.fetchUserRepositoriesFromGithub(token);
+            return ResponseEntity.ok(repos);
+        } catch (Exception e) {
+            log.error("Error fetching GitHub repositories", e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to fetch repositories: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
     
     @GetMapping("/repos")
     public ResponseEntity<?> getUserRepositories(@RequestParam String userToken) {

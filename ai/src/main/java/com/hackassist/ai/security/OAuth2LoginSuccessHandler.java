@@ -60,6 +60,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             email = principal.getAttribute("email");
             name = principal.getAttribute("name");
             picture = principal.getAttribute("picture");
+            if ((name == null || name.isEmpty()) && principal.getAttribute("login") != null) {
+                name = principal.getAttribute("login");
+            }
+            if ((picture == null || picture.isEmpty()) && principal.getAttribute("avatar_url") != null) {
+                picture = principal.getAttribute("avatar_url");
+            }
             if (uid == null || uid.isEmpty()) {
                 uid = principal.getName();
             }

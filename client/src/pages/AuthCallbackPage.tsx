@@ -34,6 +34,16 @@ export function AuthCallbackPage() {
         return
       }
 
+      if (intent === 'github-connect') {
+        if (!callback.token) {
+          console.warn('[AuthCallbackPage] GitHub connect callback missing token')
+        }
+        console.log('[AuthCallbackPage] ✓ GitHub connect flow complete')
+        setGithubConnected(true)
+        navigate('/profile', { replace: true })
+        return
+      }
+
       if (!callback.token) {
         console.error('[AuthCallbackPage] ✗ No token in OAuth callback!')
         navigate('/login', { replace: true })
@@ -61,7 +71,7 @@ export function AuthCallbackPage() {
       setSession(user, callback.token)
       console.log('[AuthCallbackPage] ✓ Session saved to localStorage')
 
-      if (intent === 'github-connect' || isAuthenticated) {
+      if (isAuthenticated) {
         console.log('[AuthCallbackPage] Navigating to profile (GitHub connect or already authenticated)')
         setGithubConnected(true)
         navigate('/profile', { replace: true })

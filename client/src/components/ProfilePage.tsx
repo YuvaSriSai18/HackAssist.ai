@@ -1,4 +1,4 @@
-import { redirectToGithubAuth } from '../apis'
+import { redirectToGithubConnect } from '../apis'
 import { GithubConnectButton } from './GithubConnectButton'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { useAppState } from '../context/AppState'
@@ -8,7 +8,7 @@ export function ProfilePage() {
 
   const handleConnect = () => {
     window.localStorage.setItem('oauthIntent', 'github-connect')
-    redirectToGithubAuth()
+    redirectToGithubConnect()
   }
 
   if (!user) {

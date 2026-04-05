@@ -2,11 +2,14 @@ package com.hackassist.ai.Service;
 
 import com.hackassist.ai.models.GitHubRepository;
 import com.hackassist.ai.models.GitCommit;
+import java.util.Map;
 import java.util.List;
 
 public interface IGitHubService {
     
     List<GitHubRepository> fetchUserRepositories(String userToken);
+
+    List<Map<String, Object>> fetchUserRepositoriesFromGithub(String accessToken);
     
     GitHubRepository saveRepository(GitHubRepository repository);
     

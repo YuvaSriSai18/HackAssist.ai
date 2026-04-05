@@ -22,18 +22,35 @@ public class OAuth2ClientConfig {
     @Value("${GOOGLE_CLIENT_SECRET:}")
     private String googleClientSecret;
 
+    @Value("${GITHUB_CLIENT_ID:}")
+    private String githubClientId;
+
+    @Value("${GITHUB_CLIENT_SECRET:}")
+    private String githubClientSecret;
+
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
         log.info("============ OAuth2ClientConfig: Initializing ClientRegistrationRepository ============");
         log.info("Google Client ID present: {}", (googleClientId != null && !googleClientId.isEmpty()));
         log.info("Google Client Secret present: {}", (googleClientSecret != null && !googleClientSecret.isEmpty()));
+        log.info("GitHub Client ID present: {}", (githubClientId != null && !githubClientId.isEmpty()));
+        log.info("GitHub Client Secret present: {}", (githubClientSecret != null && !githubClientSecret.isEmpty()));
         if (googleClientId == null || googleClientId.isEmpty()) {
             log.error("ERROR: GOOGLE_CLIENT_ID is not set in environment!");
         }
         if (googleClientSecret == null || googleClientSecret.isEmpty()) {
             log.error("ERROR: GOOGLE_CLIENT_SECRET is not set in environment!");
         }
-        return new InMemoryClientRegistrationRepository(googleClientRegistration());
+        if (githubClientId == null || githubClientId.isEmpty()) {
+            log.error("ERROR: GITHUB_CLIENT_ID is not set in environment!");
+        }
+        if (githubClientSecret == null || githubClientSecret.isEmpty()) {
+            log.error("ERROR: GITHUB_CLIENT_SECRET is not set in environment!");
+        }
+        return new InMemoryClientRegistrationRepository(
+                googleClientRegistration(),
+                githubClientRegistration()
+        );
     }
 
     @Bean
@@ -61,6 +78,25 @@ public class OAuth2ClientConfig {
                 .clientName("Google")
                 .build();
         log.info("OAuth2ClientConfig: Google ClientRegistration created successfully");
+        return reg;
+    }
+
+    private ClientRegistration githubClientRegistration() {
+        log.info("OAuth2ClientConfig: Building GitHub ClientRegistration");
+        ClientRegistration reg = ClientRegistration.withRegistrationId("github")
+                .clientId(githubClientId)
+                .clientSecret(githubClientSecret)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("http://localhost:8080/login/oauth2/code/github")
+                .scope("read:user", "repo")
+                .authorizationUri("https://github.com/login/oauth/authorize")
+                .tokenUri("https://github.com/login/oauth/access_token")
+                .userInfoUri("https://api.github.com/user")
+                .userNameAttributeName("id")
+                .clientName("GitHub")
+                .build();
+        log.info("OAuth2ClientConfig: GitHub ClientRegistration created successfully");
         return reg;
     }
 }

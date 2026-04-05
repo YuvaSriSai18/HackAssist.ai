@@ -58,6 +58,13 @@ export function getGithubAuthUrl() {
   return `${API_BASE_URL}/oauth2/authorization/github`
 }
 
+export function getGithubConnectUrl() {
+  const token = window.localStorage.getItem('authToken')
+  const url = `${API_BASE_URL}/auth/github/connect?token=${encodeURIComponent(token ?? '')}`
+  console.log('[APIs] GitHub connect URL:', url)
+  return url
+}
+
 export function redirectToGoogleAuth() {
   console.log('[APIs] Redirecting to Google Auth...')
   window.location.assign(getGoogleAuthUrl())
@@ -65,6 +72,10 @@ export function redirectToGoogleAuth() {
 
 export function redirectToGithubAuth() {
   window.location.assign(getGithubAuthUrl())
+}
+
+export function redirectToGithubConnect() {
+  window.location.assign(getGithubConnectUrl())
 }
 
 export function parseOAuthCallback(search: string): OAuthCallbackPayload {
