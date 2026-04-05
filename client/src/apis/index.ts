@@ -26,6 +26,8 @@ type OAuthCallbackPayload = {
   token: string | null
   user: string | null
   email: string | null
+  name: string | null
+  picture: string | null
   error: string | null
 }
 
@@ -71,6 +73,8 @@ export function parseOAuthCallback(search: string): OAuthCallbackPayload {
     token: params.get('token'),
     user: params.get('user'),
     email: params.get('email'),
+    name: params.get('name'),
+    picture: params.get('picture'),
     error: params.get('error'),
   }
   console.log('[APIs] Parsed OAuth callback from URL params:', payload)

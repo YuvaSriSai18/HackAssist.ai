@@ -1,6 +1,7 @@
 package com.hackassist.ai.config;
 
 import com.hackassist.ai.security.CustomOAuth2UserService;
+import com.hackassist.ai.security.CustomOidcUserService;
 import com.hackassist.ai.security.JwtAuthenticationFilter;
 import com.hackassist.ai.security.OAuth2LoginFailureHandler;
 import com.hackassist.ai.security.OAuth2LoginSuccessHandler;
@@ -21,6 +22,9 @@ public class SecurityConfiguration {
     private CustomOAuth2UserService customOAuth2UserService;
 
     @Autowired
+    private CustomOidcUserService customOidcUserService;
+
+    @Autowired
     private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Autowired
@@ -39,7 +43,9 @@ public class SecurityConfiguration {
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                    .userInfoEndpoint(userInfo -> userInfo
+                        .oidcUserService(customOidcUserService)
+                        .userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler));
 

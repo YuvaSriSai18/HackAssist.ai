@@ -19,6 +19,8 @@ export function AuthCallbackPage() {
         hasToken: !!callback.token,
         hasUser: !!callback.user,
         hasEmail: !!callback.email,
+        hasName: !!callback.name,
+        hasPicture: !!callback.picture,
         hasError: !!callback.error,
       })
 
@@ -50,7 +52,7 @@ export function AuthCallbackPage() {
         const fallbackEmail = callback.email ?? `${callback.user ?? 'user'}@oauth.local`
         user = {
           id: fallbackEmail,
-          name: callback.user ?? fallbackEmail.split('@')[0],
+          name: callback.name ?? fallbackEmail.split('@')[0],
           email: fallbackEmail,
         }
       }

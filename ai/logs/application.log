@@ -1466,3 +1466,228 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2026-04-06T02:55:06.582+05:30  INFO 3884 --- [hackassist.ai] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-04-06T02:55:06.585+05:30  INFO 3884 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2026-04-06T02:55:06.591+05:30  INFO 3884 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-06T02:55:27.347+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Starting AiApplication using Java 21.0.8 with PID 21532 (D:\Projects\Hackathons\Guvi_Internal_Hackathoon\ai\target\classes started by nanit in D:\Projects\Hackathons\Guvi_Internal_Hackathoon\ai)
+2026-04-06T02:55:27.350+05:30 DEBUG 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Running with Spring Boot v4.0.5, Spring v7.0.6
+2026-04-06T02:55:27.351+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-04-06T02:55:28.224+05:30  INFO 21532 --- [hackassist.ai] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-06T02:55:28.307+05:30  INFO 21532 --- [hackassist.ai] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 70 ms. Found 6 JPA repository interfaces.
+2026-04-06T02:55:28.851+05:30  INFO 21532 --- [hackassist.ai] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-06T02:55:28.868+05:30  INFO 21532 --- [hackassist.ai] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-06T02:55:28.869+05:30  INFO 21532 --- [hackassist.ai] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.20]
+2026-04-06T02:55:28.933+05:30  INFO 21532 --- [hackassist.ai] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1538 ms
+2026-04-06T02:55:29.011+05:30 DEBUG 21532 --- [hackassist.ai] [main] c.h.ai.security.JwtAuthenticationFilter  : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-06T02:55:29.193+05:30  INFO 21532 --- [hackassist.ai] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-06T02:55:29.234+05:30  INFO 21532 --- [hackassist.ai] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-04-06T02:55:29.800+05:30  INFO 21532 --- [hackassist.ai] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-06T02:55:29.843+05:30  INFO 21532 --- [hackassist.ai] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-06T02:55:30.063+05:30  INFO 21532 --- [hackassist.ai] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4ebd8d2
+2026-04-06T02:55:30.065+05:30  INFO 21532 --- [hackassist.ai] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-06T02:55:30.153+05:30  WARN 21532 --- [hackassist.ai] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-06T02:55:30.186+05:30  INFO 21532 --- [hackassist.ai] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/mydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: mydb/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-06T02:55:31.717+05:30  INFO 21532 --- [hackassist.ai] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-06T02:55:31.720+05:30  INFO 21532 --- [hackassist.ai] [main] org.hibernate.orm.jdbc.batch             : HHH100501: Automatic JDBC statement batching enabled (maximum batch size 20)
+2026-04-06T02:55:31.833+05:30  INFO 21532 --- [hackassist.ai] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T02:55:31.932+05:30  INFO 21532 --- [hackassist.ai] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-06T02:55:32.844+05:30  INFO 21532 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : ============ OAuth2ClientConfig: Initializing ClientRegistrationRepository ============
+2026-04-06T02:55:32.844+05:30  INFO 21532 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : Google Client ID present: true
+2026-04-06T02:55:32.844+05:30  INFO 21532 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : Google Client Secret present: true
+2026-04-06T02:55:32.845+05:30  INFO 21532 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Building Google ClientRegistration
+2026-04-06T02:55:32.850+05:30  INFO 21532 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Google ClientRegistration created successfully
+2026-04-06T02:55:32.852+05:30  INFO 21532 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Creating OAuth2AuthorizedClientService
+2026-04-06T02:55:32.977+05:30  WARN 21532 --- [hackassist.ai] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-06T02:55:33.524+05:30  INFO 21532 --- [hackassist.ai] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-06T02:55:33.535+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Started AiApplication in 6.667 seconds (process running for 7.077)
+2026-04-06T02:55:33.537+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T02:55:33.538+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : 🚀 AI-Powered Hackathon Assistant Started!
+2026-04-06T02:55:33.538+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T02:55:33.538+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Server running on: http://localhost:8080
+2026-04-06T02:55:33.538+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : API Base URL: http://localhost:8080/api
+2026-04-06T02:55:33.539+05:30  INFO 21532 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T02:55:39.182+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-1] o.apache.tomcat.util.http.parser.Cookie  : A cookie header was received [sidebar:state=true;] that contained an invalid cookie. That cookie will be ignored.
+ Note: further occurrences of this error will be logged at DEBUG level.
+2026-04-06T02:55:39.189+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-06T02:55:39.190+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-06T02:55:39.193+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-04-06T02:55:44.501+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : ============ OAuth2LoginSuccessHandler.onAuthenticationSuccess() ============
+2026-04-06T02:55:44.505+05:30  WARN 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : Principal is not CustomUserPrincipal, using authentication name: 112691580169249315003
+2026-04-06T02:55:44.505+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : ============ JwtTokenProvider.generateToken() ============
+2026-04-06T02:55:44.509+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : Generating JWT token for uid: 112691580169249315003, email: 112691580169249315003
+2026-04-06T02:55:44.510+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : Token expires in 86400000 ms
+2026-04-06T02:55:44.659+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : ✓ JWT token generated successfully. Token preview: eyJhbGciOiJIUzUxMiJ9...
+2026-04-06T02:55:44.659+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : ✓ OAuth2 authentication successful!
+2026-04-06T02:55:44.662+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : Redirecting to frontend: http://localhost:5173/auth/callback
+2026-04-06T02:55:44.989+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/me
+2026-04-06T02:55:44.990+05:30  INFO 21532 --- [hackassist.ai] [http-nio-8080-exec-4] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/me
+2026-04-06T02:55:44.990+05:30  WARN 21532 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/me
+2026-04-06T02:55:44.990+05:30  WARN 21532 --- [hackassist.ai] [http-nio-8080-exec-4] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/me
+2026-04-06T03:06:27.165+05:30  INFO 21532 --- [hackassist.ai] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-06T03:06:27.174+05:30  INFO 21532 --- [hackassist.ai] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-04-06T03:06:27.179+05:30  INFO 21532 --- [hackassist.ai] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T03:06:27.182+05:30  INFO 21532 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-06T03:06:27.187+05:30  INFO 21532 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-06T03:06:42.517+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Starting AiApplication using Java 21.0.8 with PID 29036 (D:\Projects\Hackathons\Guvi_Internal_Hackathoon\ai\target\classes started by nanit in D:\Projects\Hackathons\Guvi_Internal_Hackathoon\ai)
+2026-04-06T03:06:42.520+05:30 DEBUG 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Running with Spring Boot v4.0.5, Spring v7.0.6
+2026-04-06T03:06:42.521+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-04-06T03:06:43.372+05:30  INFO 29036 --- [hackassist.ai] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-06T03:06:43.457+05:30  INFO 29036 --- [hackassist.ai] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 73 ms. Found 6 JPA repository interfaces.
+2026-04-06T03:06:43.919+05:30  INFO 29036 --- [hackassist.ai] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-06T03:06:43.930+05:30  INFO 29036 --- [hackassist.ai] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-06T03:06:43.935+05:30  INFO 29036 --- [hackassist.ai] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.20]
+2026-04-06T03:06:44.023+05:30  INFO 29036 --- [hackassist.ai] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1442 ms
+2026-04-06T03:06:44.072+05:30 DEBUG 29036 --- [hackassist.ai] [main] c.h.ai.security.JwtAuthenticationFilter  : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-06T03:06:44.224+05:30  INFO 29036 --- [hackassist.ai] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-06T03:06:44.291+05:30  INFO 29036 --- [hackassist.ai] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-04-06T03:06:44.836+05:30  INFO 29036 --- [hackassist.ai] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-06T03:06:44.872+05:30  INFO 29036 --- [hackassist.ai] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-06T03:06:45.071+05:30  INFO 29036 --- [hackassist.ai] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3395c2a7
+2026-04-06T03:06:45.073+05:30  INFO 29036 --- [hackassist.ai] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-06T03:06:45.142+05:30  WARN 29036 --- [hackassist.ai] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-06T03:06:45.167+05:30  INFO 29036 --- [hackassist.ai] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/mydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: mydb/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-06T03:06:46.184+05:30  INFO 29036 --- [hackassist.ai] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-06T03:06:46.189+05:30  INFO 29036 --- [hackassist.ai] [main] org.hibernate.orm.jdbc.batch             : HHH100501: Automatic JDBC statement batching enabled (maximum batch size 20)
+2026-04-06T03:06:46.307+05:30  INFO 29036 --- [hackassist.ai] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T03:06:46.394+05:30  INFO 29036 --- [hackassist.ai] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-06T03:06:47.234+05:30  INFO 29036 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : ============ OAuth2ClientConfig: Initializing ClientRegistrationRepository ============
+2026-04-06T03:06:47.234+05:30  INFO 29036 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : Google Client ID present: true
+2026-04-06T03:06:47.234+05:30  INFO 29036 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : Google Client Secret present: true
+2026-04-06T03:06:47.236+05:30  INFO 29036 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Building Google ClientRegistration
+2026-04-06T03:06:47.239+05:30  INFO 29036 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Google ClientRegistration created successfully
+2026-04-06T03:06:47.240+05:30  INFO 29036 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Creating OAuth2AuthorizedClientService
+2026-04-06T03:06:47.371+05:30  WARN 29036 --- [hackassist.ai] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-06T03:06:47.967+05:30  INFO 29036 --- [hackassist.ai] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-06T03:06:47.972+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Started AiApplication in 5.959 seconds (process running for 6.48)
+2026-04-06T03:06:47.975+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T03:06:47.976+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : 🚀 AI-Powered Hackathon Assistant Started!
+2026-04-06T03:06:47.976+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T03:06:47.976+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Server running on: http://localhost:8080
+2026-04-06T03:06:47.976+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : API Base URL: http://localhost:8080/api
+2026-04-06T03:06:47.976+05:30  INFO 29036 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T03:07:08.035+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-06T03:07:08.041+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-06T03:07:08.048+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 7 ms
+2026-04-06T03:07:08.065+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-1] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/logout
+2026-04-06T03:07:08.065+05:30  WARN 29036 --- [hackassist.ai] [http-nio-8080-exec-1] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/logout
+2026-04-06T03:07:12.888+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-2] o.apache.tomcat.util.http.parser.Cookie  : A cookie header was received [sidebar:state=true;] that contained an invalid cookie. That cookie will be ignored.
+ Note: further occurrences of this error will be logged at DEBUG level.
+2026-04-06T03:07:18.585+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : ============ CustomOidcUserService.loadUser() START ============
+2026-04-06T03:07:18.594+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : OIDC Provider: google
+2026-04-06T03:07:18.704+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : OIDC Attributes received: {at_hash=SHxWa1h699G3yB5Fb8IYgw, sub=112691580169249315003, email_verified=true, iss=https://accounts.google.com, given_name=yuva sankara naga sri sai, nonce=wL0GdYECgwGAFWlq8iqtEy4QKLlb2PJPasQ4zDpwrT8, picture=https://lh3.googleusercontent.com/a/ACg8ocKVTP99zqTNAp_z1srlHEs4zChrEMYNMr4PHwO4q6CDijXlbE9o=s96-c, aud=[768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com], azp=768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com, name=yuva sankara naga sri sai thota | AP22110010750, hd=srmap.edu.in, exp=2026-04-05T22:37:17Z, family_name=thota  | AP22110010750, iat=2026-04-05T21:37:17Z, email=yuvasankaranagasrisai_thota@srmap.edu.in}
+2026-04-06T03:07:18.706+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : OIDC uid: 112691580169249315003
+2026-04-06T03:07:18.710+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : OIDC email: yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:07:18.711+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : OIDC name: yuva sankara naga sri sai thota | AP22110010750
+2026-04-06T03:07:19.060+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : Created new OIDC user: uid=112691580169249315003, email=yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:07:19.060+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.CustomOidcUserService    : ============ CustomOidcUserService.loadUser() END ============
+2026-04-06T03:07:19.069+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.a.s.OAuth2LoginSuccessHandler        : ============ OAuth2LoginSuccessHandler.onAuthenticationSuccess() ============
+2026-04-06T03:07:19.070+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.a.s.OAuth2LoginSuccessHandler        : OIDC principal extracted - uid: 112691580169249315003, email: yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:07:19.072+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.a.s.OAuth2LoginSuccessHandler        : OIDC attributes: {at_hash=SHxWa1h699G3yB5Fb8IYgw, sub=112691580169249315003, email_verified=true, iss=https://accounts.google.com, given_name=yuva sankara naga sri sai, nonce=wL0GdYECgwGAFWlq8iqtEy4QKLlb2PJPasQ4zDpwrT8, picture=https://lh3.googleusercontent.com/a/ACg8ocKVTP99zqTNAp_z1srlHEs4zChrEMYNMr4PHwO4q6CDijXlbE9o=s96-c, aud=[768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com], azp=768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com, name=yuva sankara naga sri sai thota | AP22110010750, hd=srmap.edu.in, exp=2026-04-05T22:37:17Z, family_name=thota  | AP22110010750, iat=2026-04-05T21:37:17Z, email=yuvasankaranagasrisai_thota@srmap.edu.in}
+2026-04-06T03:07:19.073+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : ============ JwtTokenProvider.generateToken() ============
+2026-04-06T03:07:19.074+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : Generating JWT token for uid: 112691580169249315003, email: yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:07:19.074+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : Token expires in 86400000 ms
+2026-04-06T03:07:19.236+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : ✓ JWT token generated successfully. Token preview: eyJhbGciOiJIUzUxMiJ9...
+2026-04-06T03:07:19.237+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.a.s.OAuth2LoginSuccessHandler        : ✓ OAuth2 authentication successful!
+2026-04-06T03:07:19.238+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.a.s.OAuth2LoginSuccessHandler        : Redirecting to frontend: http://localhost:5173/auth/callback
+2026-04-06T03:07:19.613+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-5] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/me
+2026-04-06T03:07:19.613+05:30  WARN 29036 --- [hackassist.ai] [http-nio-8080-exec-5] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/me
+2026-04-06T03:07:19.617+05:30  INFO 29036 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/me
+2026-04-06T03:07:19.618+05:30  WARN 29036 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/me
+2026-04-06T03:17:28.301+05:30  INFO 29036 --- [hackassist.ai] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-06T03:17:28.307+05:30  INFO 29036 --- [hackassist.ai] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-04-06T03:17:28.313+05:30  INFO 29036 --- [hackassist.ai] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T03:17:28.317+05:30  INFO 29036 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-06T03:17:28.322+05:30  INFO 29036 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-06T03:17:55.102+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Starting AiApplication using Java 21.0.8 with PID 20068 (D:\Projects\Hackathons\Guvi_Internal_Hackathoon\ai\target\classes started by nanit in D:\Projects\Hackathons\Guvi_Internal_Hackathoon\ai)
+2026-04-06T03:17:55.105+05:30 DEBUG 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Running with Spring Boot v4.0.5, Spring v7.0.6
+2026-04-06T03:17:55.105+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-04-06T03:17:55.898+05:30  INFO 20068 --- [hackassist.ai] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-06T03:17:55.970+05:30  INFO 20068 --- [hackassist.ai] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 64 ms. Found 6 JPA repository interfaces.
+2026-04-06T03:17:56.426+05:30  INFO 20068 --- [hackassist.ai] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-06T03:17:56.439+05:30  INFO 20068 --- [hackassist.ai] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-06T03:17:56.440+05:30  INFO 20068 --- [hackassist.ai] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.20]
+2026-04-06T03:17:56.511+05:30  INFO 20068 --- [hackassist.ai] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1351 ms
+2026-04-06T03:17:56.565+05:30 DEBUG 20068 --- [hackassist.ai] [main] c.h.ai.security.JwtAuthenticationFilter  : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-06T03:17:56.703+05:30  INFO 20068 --- [hackassist.ai] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-06T03:17:56.770+05:30  INFO 20068 --- [hackassist.ai] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-04-06T03:17:57.191+05:30  INFO 20068 --- [hackassist.ai] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-06T03:17:57.226+05:30  INFO 20068 --- [hackassist.ai] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-06T03:17:57.852+05:30  INFO 20068 --- [hackassist.ai] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@50e1f3fc
+2026-04-06T03:17:57.854+05:30  INFO 20068 --- [hackassist.ai] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-06T03:17:57.923+05:30  WARN 20068 --- [hackassist.ai] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-06T03:17:57.942+05:30  INFO 20068 --- [hackassist.ai] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/mydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: mydb/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-06T03:17:58.878+05:30  INFO 20068 --- [hackassist.ai] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-06T03:17:58.885+05:30  INFO 20068 --- [hackassist.ai] [main] org.hibernate.orm.jdbc.batch             : HHH100501: Automatic JDBC statement batching enabled (maximum batch size 20)
+2026-04-06T03:17:59.818+05:30  INFO 20068 --- [hackassist.ai] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T03:17:59.897+05:30  INFO 20068 --- [hackassist.ai] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-06T03:18:00.707+05:30  INFO 20068 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : ============ OAuth2ClientConfig: Initializing ClientRegistrationRepository ============
+2026-04-06T03:18:00.707+05:30  INFO 20068 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : Google Client ID present: true
+2026-04-06T03:18:00.707+05:30  INFO 20068 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : Google Client Secret present: true
+2026-04-06T03:18:00.708+05:30  INFO 20068 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Building Google ClientRegistration
+2026-04-06T03:18:00.710+05:30  INFO 20068 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Google ClientRegistration created successfully
+2026-04-06T03:18:00.711+05:30  INFO 20068 --- [hackassist.ai] [main] c.h.ai.config.OAuth2ClientConfig         : OAuth2ClientConfig: Creating OAuth2AuthorizedClientService
+2026-04-06T03:18:00.827+05:30  WARN 20068 --- [hackassist.ai] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-06T03:18:01.341+05:30  INFO 20068 --- [hackassist.ai] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Started AiApplication in 6.648 seconds (process running for 6.984)
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : 🚀 AI-Powered Hackathon Assistant Started!
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Server running on: http://localhost:8080
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : API Base URL: http://localhost:8080/api
+2026-04-06T03:18:01.345+05:30  INFO 20068 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-06T03:19:00.565+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-1] o.apache.tomcat.util.http.parser.Cookie  : A cookie header was received [sidebar:state=true;] that contained an invalid cookie. That cookie will be ignored.
+ Note: further occurrences of this error will be logged at DEBUG level.
+2026-04-06T03:19:00.572+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-06T03:19:00.572+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-06T03:19:00.575+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-04-06T03:19:05.766+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : ============ CustomOidcUserService.loadUser() START ============
+2026-04-06T03:19:05.767+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : OIDC Provider: google
+2026-04-06T03:19:05.877+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : OIDC Attributes received: {at_hash=aI1toBacd5vMFJPPkeRMGg, sub=112691580169249315003, email_verified=true, iss=https://accounts.google.com, given_name=yuva sankara naga sri sai, nonce=v8FFjCYcgtuTFJ9wPs6Zcnaahil0Ttv-hfKsQl9yo20, picture=https://lh3.googleusercontent.com/a/ACg8ocKVTP99zqTNAp_z1srlHEs4zChrEMYNMr4PHwO4q6CDijXlbE9o=s96-c, aud=[768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com], azp=768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com, name=yuva sankara naga sri sai thota | AP22110010750, hd=srmap.edu.in, exp=2026-04-05T22:49:05Z, family_name=thota  | AP22110010750, iat=2026-04-05T21:49:05Z, email=yuvasankaranagasrisai_thota@srmap.edu.in}
+2026-04-06T03:19:05.877+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : OIDC uid: 112691580169249315003
+2026-04-06T03:19:05.878+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : OIDC email: yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:19:05.879+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : OIDC name: yuva sankara naga sri sai thota | AP22110010750
+2026-04-06T03:19:06.119+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : Created new OIDC user: uid=112691580169249315003, email=yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:19:06.119+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.CustomOidcUserService    : ============ CustomOidcUserService.loadUser() END ============
+2026-04-06T03:19:06.123+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : ============ OAuth2LoginSuccessHandler.onAuthenticationSuccess() ============
+2026-04-06T03:19:06.124+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : OIDC principal extracted - uid: 112691580169249315003, email: yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:19:06.124+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : OIDC attributes: {at_hash=aI1toBacd5vMFJPPkeRMGg, sub=112691580169249315003, email_verified=true, iss=https://accounts.google.com, given_name=yuva sankara naga sri sai, nonce=v8FFjCYcgtuTFJ9wPs6Zcnaahil0Ttv-hfKsQl9yo20, picture=https://lh3.googleusercontent.com/a/ACg8ocKVTP99zqTNAp_z1srlHEs4zChrEMYNMr4PHwO4q6CDijXlbE9o=s96-c, aud=[768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com], azp=768724746378-h5acv04o94adf84uoc5279dq4sg6p869.apps.googleusercontent.com, name=yuva sankara naga sri sai thota | AP22110010750, hd=srmap.edu.in, exp=2026-04-05T22:49:05Z, family_name=thota  | AP22110010750, iat=2026-04-05T21:49:05Z, email=yuvasankaranagasrisai_thota@srmap.edu.in}
+2026-04-06T03:19:06.125+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : ============ JwtTokenProvider.generateToken() ============
+2026-04-06T03:19:06.125+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : Generating JWT token for uid: 112691580169249315003, email: yuvasankaranagasrisai_thota@srmap.edu.in
+2026-04-06T03:19:06.125+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : Token expires in 86400000 ms
+2026-04-06T03:19:06.258+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.ai.security.JwtTokenProvider         : ✓ JWT token generated successfully. Token preview: eyJhbGciOiJIUzUxMiJ9...
+2026-04-06T03:19:06.265+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : ✓ OAuth2 authentication successful!
+2026-04-06T03:19:06.265+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-2] c.h.a.s.OAuth2LoginSuccessHandler        : Redirecting to frontend: http://localhost:5173/auth/callback
+2026-04-06T03:19:06.642+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-10] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/me
+2026-04-06T03:19:06.643+05:30  WARN 20068 --- [hackassist.ai] [http-nio-8080-exec-10] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/me
+2026-04-06T03:19:06.646+05:30  INFO 20068 --- [hackassist.ai] [http-nio-8080-exec-8] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: OPTIONS /auth/me
+2026-04-06T03:19:06.647+05:30  WARN 20068 --- [hackassist.ai] [http-nio-8080-exec-8] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: No JWT token found in Authorization header for: /auth/me
