@@ -1,0 +1,10 @@
+package com.hackassist.ai.models;
+
+public enum RiskType {
+    NO_COMMITS_IN_HOURS,
+    TOO_MANY_PENDING_TASKS,
+    MISSED_DEADLINE,
+    TEAM_MEMBER_INACTIVE,
+    LOW_COMMIT_FREQUENCY,
+    INCOMPLETE_TASK_DESCRIPTION
+}
