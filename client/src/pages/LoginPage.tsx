@@ -1,30 +1,47 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { loginWithDemo, redirectToGoogleAuth } from '../apis'
 import { LoginForm } from '../components/Auth/LoginForm'
 import { Navbar } from '../components/Navbar'
 import { useAppState } from '../context/AppState'
 
 export function LoginPage() {
-  const { login } = useAppState()
+  const { setSession } = useAppState()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
   const handleLogin = (email: string, password: string) => {
+    console.log('[LoginPage] Demo login attempt for:', email)
     setLoading(true)
-    setTimeout(() => {
-      login(email, password)
-      setLoading(false)
-      navigate('/projects', { replace: true })
-    }, 500)
+    void loginWithDemo(email, password)
+      .then((result) => {
+        console.log('[LoginPage] Demo login successful')
+        setSession(result.user, result.token)
+        navigate('/projects', { replace: true })
+      })
+      .catch((err) => {
+        console.warn('[LoginPage] Demo login failed:', err)
+        const safeName = email.split('@')[0] || 'Demo User'
+        setSession(
+          {
+            id: `user-${Date.now()}`,
+            name: safeName.charAt(0).toUpperCase() + safeName.slice(1),
+            email,
+          },
+          `mock-token-${Date.now()}`
+        )
+        navigate('/projects', { replace: true })
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleGoogleLogin = () => {
-    setLoading(true)
-    setTimeout(() => {
-      login('demo@google.com', 'oauth')
-      setLoading(false)
-      navigate('/projects', { replace: true })
-    }, 400)
+    console.log('[LoginPage] Google login button clicked')
+    window.localStorage.removeItem('oauthIntent')
+    console.log('[LoginPage] Redirecting to Google OAuth endpoint...')
+    redirectToGoogleAuth()
   }
 
   return (

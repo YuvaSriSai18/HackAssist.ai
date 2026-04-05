@@ -18,7 +18,6 @@ public class AiApplication {
 		logger.info("===========================================");
 		logger.info("Server running on: http://localhost:8080");
 		logger.info("API Base URL: http://localhost:8080/api");
-		logger.info("H2 Console: http://localhost:8080/api/h2-console");
 		logger.info("===========================================");
 	}
 

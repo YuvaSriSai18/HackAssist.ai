@@ -11,6 +11,7 @@ type ProblemByProject = Record<string, string>
 
 type AppState = {
   user: User | null
+  token: string | null
   isAuthenticated: boolean
   projects: Project[]
   sharedProjects: Project[]
@@ -20,6 +21,7 @@ type AppState = {
   problemByProject: ProblemByProject
   github: GithubState
   login: (email: string, password: string) => void
+  setSession: (user: User, token: string) => void
   logout: () => void
   selectProject: (projectId: string) => void
   createProject: (project: Project) => void
@@ -27,6 +29,7 @@ type AppState = {
   addMember: (projectId: string, member: Member) => void
   setProblem: (projectId: string, problem: string) => void
   updateGithub: (connected: boolean) => void
+  setGithubConnected: (connected: boolean) => void
 }
 
 const AppStateContext = createContext<AppState | undefined>(undefined)
@@ -110,8 +113,17 @@ const mockMembers: Member[] = [
 ]
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState<User | null>(() => {
+    const raw = window.localStorage.getItem('authUser')
+    if (!raw) return null
+    try {
+      return JSON.parse(raw) as User
+    } catch {
+      return null
+    }
+  })
+  const [token, setToken] = useState<string | null>(() => window.localStorage.getItem('authToken'))
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(window.localStorage.getItem('authToken')))
   const [projects, setProjects] = useState<Project[]>(mockProjects)
   const [sharedProjects] = useState<Project[]>(mockSharedProjects)
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -130,11 +142,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [mockProjects[1].id]: 'Create a pitch builder that turns outlines into polished demos.',
     [mockSharedProjects[0].id]: 'Ship a collaborative mobile demo for the hackathon finals.',
   })
-  const [github, setGithub] = useState<GithubState>({ connected: false })
+  const [github, setGithub] = useState<GithubState>(() => ({
+    connected: window.localStorage.getItem('githubConnected') === 'true',
+  }))
+
+  const persistSession = (nextUser: User, nextToken: string) => {
+    setUser(nextUser)
+    setToken(nextToken)
+    setIsAuthenticated(true)
+    window.localStorage.setItem('authUser', JSON.stringify(nextUser))
+    window.localStorage.setItem('authToken', nextToken)
+  }
 
   const value = useMemo<AppState>(
     () => ({
       user,
+      token,
       isAuthenticated,
       projects,
       sharedProjects,
@@ -145,18 +168,26 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       github,
       login: (email, _password) => {
         const safeName = email.split('@')[0] || 'Demo User'
-        setUser({
+        const nextUser = {
           id: `user-${Date.now()}`,
           name: safeName.charAt(0).toUpperCase() + safeName.slice(1),
           email,
-        })
-        setIsAuthenticated(true)
+        }
+        const nextToken = `mock-token-${Date.now()}`
+        persistSession(nextUser, nextToken)
+      },
+      setSession: (nextUser, nextToken) => {
+        persistSession(nextUser, nextToken)
       },
       logout: () => {
         setUser(null)
+        setToken(null)
         setIsAuthenticated(false)
         setSelectedProjectId(null)
         setGithub({ connected: false })
+        window.localStorage.removeItem('authUser')
+        window.localStorage.removeItem('authToken')
+        window.localStorage.removeItem('githubConnected')
       },
       selectProject: setSelectedProjectId,
       createProject: (project) => {
@@ -180,10 +211,16 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       },
       updateGithub: (connected) => {
         setGithub({ connected })
+        window.localStorage.setItem('githubConnected', String(connected))
+      },
+      setGithubConnected: (connected) => {
+        setGithub({ connected })
+        window.localStorage.setItem('githubConnected', String(connected))
       },
     }),
     [
       user,
+      token,
       isAuthenticated,
       projects,
       sharedProjects,

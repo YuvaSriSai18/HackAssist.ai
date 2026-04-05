@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { LogOut, Sparkles } from 'lucide-react'
+import { logoutRequest } from '../apis'
 import { Button } from './ui/button'
 import { useAppState } from '../context/AppState'
 
@@ -9,8 +10,15 @@ const tabClassName = ({ isActive }: { isActive: boolean }) =>
   }`
 
 export function Navbar() {
-  const { isAuthenticated, logout } = useAppState()
+  const { isAuthenticated, logout, token } = useAppState()
   const navigate = useNavigate()
+
+  const handleLogout = () => {
+    void logoutRequest(token ?? undefined).finally(() => {
+      logout()
+      navigate('/', { replace: true })
+    })
+  }
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-5">
@@ -36,10 +44,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              onClick={() => {
-                logout()
-                navigate('/', { replace: true })
-              }}
+              onClick={handleLogout}
             >
               <LogOut size={18} />
               Logout

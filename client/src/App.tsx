@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar'
 import { useAppState } from './context/AppState'
 import { LandingPage } from './components/LandingPage'
 import { LoginPage } from './pages/LoginPage'
+import { AuthCallbackPage } from './pages/AuthCallbackPage'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { ProjectWorkspacePage } from './pages/ProjectWorkspacePage'
 import { ProfilePage } from './components/ProfilePage'
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route
         path="/login"
         element={isAuthenticated ? <Navigate to="/projects" replace /> : <LoginPage />}
