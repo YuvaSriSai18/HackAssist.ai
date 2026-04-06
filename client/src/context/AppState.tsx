@@ -2,6 +2,13 @@ import type React from 'react'
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import type { GithubState, Member, Project, Task, User } from '../models/types'
 import { TaskPriority, TaskStatus } from '../models/types'
+import {
+  createProject as createProjectApi,
+  deleteProject as deleteProjectApi,
+  fetchMyProjects,
+  linkProjectRepo as linkProjectRepoApi,
+  updateProject as updateProjectApi,
+} from '../apis'
 
 type TasksByProject = Record<string, Task[]>
 
@@ -24,7 +31,11 @@ type AppState = {
   setSession: (user: User, token: string) => void
   logout: () => void
   selectProject: (projectId: string) => void
-  createProject: (project: Project) => void
+  createProject: (request: { name: string; description: string }) => Promise<Project>
+  loadProjects: () => Promise<void>
+  updateProject: (projectId: string, request: { name?: string; description?: string }) => Promise<Project>
+  deleteProject: (projectId: string) => Promise<void>
+  linkProjectRepo: (projectId: string, repo: { repoUrl?: string; repoFullName?: string }) => Promise<Project>
   updateTasks: (projectId: string, tasks: Task[]) => void
   addMember: (projectId: string, member: Member) => void
   setProblem: (projectId: string, problem: string) => void
@@ -147,6 +158,31 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     verified: false,
   }))
 
+  const mapProjectResponse = useCallback(
+    (item: {
+      id?: number
+      projectId?: string
+      name?: string
+      description?: string
+      createdAt?: string
+      githubRepoUrl?: string
+    }) => {
+      const ownerName = user?.name ?? 'You'
+      return {
+        id: item.projectId ?? String(item.id ?? `proj-${Date.now()}`),
+        backendId: item.id,
+        projectId: item.projectId,
+        name: item.name ?? 'Untitled Project',
+        description: item.description ?? '',
+        owner: ownerName,
+        members: ownerName ? [ownerName] : [],
+        createdAt: item.createdAt ? item.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+        githubRepoUrl: item.githubRepoUrl,
+      } satisfies Project
+    },
+    [user?.name]
+  )
+
   const persistSession = useCallback((nextUser: User, nextToken: string) => {
     setUser(nextUser)
     setToken(nextToken)
@@ -174,6 +210,90 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       persistGithubStatus(connected)
     },
     [persistGithubStatus]
+  )
+
+  const loadProjects = useCallback(async () => {
+    if (!token) {
+      setProjects([])
+      return
+    }
+    const data = await fetchMyProjects(token)
+    setProjects(data.map(mapProjectResponse))
+  }, [mapProjectResponse, token])
+
+  const createProject = useCallback(
+    async (request: { name: string; description: string }) => {
+      if (!token) {
+        throw new Error('Authentication required')
+      }
+      const data = await createProjectApi(token, request)
+      const project = mapProjectResponse(data)
+      setProjects((prev) => [project, ...prev])
+      setTasksByProject((prev) => ({ ...prev, [project.id]: [] }))
+      setMembersByProject((prev) => ({ 
+        ...prev, 
+        [project.id]: project.members.map((name, idx) => ({
+          id: `m-${project.id}-${idx}`,
+          name,
+          role: 'Member',
+        }))
+      }))
+      setProblemByProject((prev) => ({ ...prev, [project.id]: '' }))
+      return project
+    },
+    [mapProjectResponse, token]
+  )
+
+  const updateProject = useCallback(
+    async (projectId: string, request: { name?: string; description?: string }) => {
+      if (!token) {
+        throw new Error('Authentication required')
+      }
+      const data = await updateProjectApi(token, projectId, request)
+      const updated = mapProjectResponse(data)
+      setProjects((prev) => prev.map((item) => (item.id === projectId ? { ...item, ...updated } : item)))
+      return updated
+    },
+    [mapProjectResponse, token]
+  )
+
+  const deleteProject = useCallback(
+    async (projectId: string) => {
+      if (!token) {
+        throw new Error('Authentication required')
+      }
+      await deleteProjectApi(token, projectId)
+      setProjects((prev) => prev.filter((item) => item.id !== projectId))
+      setTasksByProject((prev) => {
+        const next = { ...prev }
+        delete next[projectId]
+        return next
+      })
+      setMembersByProject((prev) => {
+        const next = { ...prev }
+        delete next[projectId]
+        return next
+      })
+      setProblemByProject((prev) => {
+        const next = { ...prev }
+        delete next[projectId]
+        return next
+      })
+    },
+    [token]
+  )
+
+  const linkProjectRepo = useCallback(
+    async (projectId: string, repo: { repoUrl?: string; repoFullName?: string }) => {
+      if (!token) {
+        throw new Error('Authentication required')
+      }
+      const data = await linkProjectRepoApi(token, projectId, repo)
+      const updated = mapProjectResponse(data)
+      setProjects((prev) => prev.map((item) => (item.id === projectId ? { ...item, ...updated } : item)))
+      return updated
+    },
+    [mapProjectResponse, token]
   )
 
   const value = useMemo<AppState>(
@@ -211,13 +331,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         window.localStorage.removeItem('authToken')
       },
       selectProject: setSelectedProjectId,
-      createProject: (project) => {
-        setProjects((prev) => [project, ...prev])
-        setTasksByProject((prev) => ({ ...prev, [project.id]: [] }))
-        setMembersByProject((prev) => ({ ...prev, [project.id]: [] }))
-        setProblemByProject((prev) => ({ ...prev, [project.id]: '' }))
-        setSelectedProjectId(project.id)
-      },
+      createProject,
+      loadProjects,
+      updateProject,
+      deleteProject,
+      linkProjectRepo,
       updateTasks: (projectId, tasks) => {
         setTasksByProject((prev) => ({ ...prev, [projectId]: tasks }))
       },
@@ -244,9 +362,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       membersByProject,
       problemByProject,
       github,
+      createProject,
+      loadProjects,
+      updateProject,
+      deleteProject,
+      linkProjectRepo,
       updateGithub,
       setGithubConnected,
       persistSession,
+      mapProjectResponse,
     ]
   )
 

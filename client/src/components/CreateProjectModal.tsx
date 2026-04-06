@@ -7,26 +7,29 @@ import { Button } from './ui/button'
 import type { Project } from '../models/types'
 
 type CreateProjectModalProps = {
-  onCreate: (project: Project) => void
+  onCreate: (payload: { name: string; description: string }) => Promise<Project>
 }
 
 export function CreateProjectModal({ onCreate }: CreateProjectModalProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!name.trim()) return
-    const project: Project = {
-      id: `proj-${Date.now()}`,
-      name,
-      description,
-      owner: 'Demo Lead',
-      members: ['Demo Lead'],
-      createdAt: new Date().toISOString().split('T')[0],
+    setIsSubmitting(true)
+    try {
+      await onCreate({ name, description })
+      setError(null)
+      setName('')
+      setDescription('')
+    } catch (err) {
+      console.error('[CreateProjectModal] Failed to create project', err)
+      setError('Unable to create project. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
-    onCreate(project)
-    setName('')
-    setDescription('')
   }
 
   return (
@@ -49,8 +52,9 @@ export function CreateProjectModal({ onCreate }: CreateProjectModalProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <Button variant="accent" onClick={handleCreate}>
-            Create Project
+          {error ? <p className="text-xs text-red-300">{error}</p> : null}
+          <Button variant="accent" onClick={handleCreate} disabled={isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create Project'}
           </Button>
         </div>
       </DialogContent>

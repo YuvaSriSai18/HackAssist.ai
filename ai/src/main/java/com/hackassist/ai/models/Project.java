@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "projects")
@@ -16,6 +17,9 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "project_id", nullable = false, unique = true)
+    private String projectId;
     
     @Column(nullable = false)
     private String name;
@@ -49,6 +53,9 @@ public class Project {
     
     @PrePersist
     protected void onCreate() {
+        if (projectId == null || projectId.isBlank()) {
+            projectId = UUID.randomUUID().toString();
+        }
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         status = ProjectStatus.ACTIVE;

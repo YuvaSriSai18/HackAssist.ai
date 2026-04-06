@@ -1,20 +1,25 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CreateProjectModal } from '../components/CreateProjectModal'
 import { ProjectList } from '../components/ProjectList'
 import { useAppState } from '../context/AppState'
-import type { Project } from '../models/types'
 
 export function ProjectsPage() {
-  const { projects, sharedProjects, createProject, selectProject } = useAppState()
+  const { projects, sharedProjects, createProject, selectProject, loadProjects, token } = useAppState()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) return
+    void loadProjects().catch(() => {})
+  }, [loadProjects, token])
 
   const openProject = (projectId: string) => {
     selectProject(projectId)
     navigate(`/project/${projectId}`)
   }
 
-  const handleCreate = (project: Project) => {
-    createProject(project)
+  const handleCreate = async (payload: { name: string; description: string }) => {
+    const project = await createProject(payload)
     navigate(`/project/${project.id}`)
   }
 

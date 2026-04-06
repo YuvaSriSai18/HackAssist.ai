@@ -1,116 +1,93 @@
 package com.hackassist.ai.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import com.hackassist.ai.models.Project;
-import com.hackassist.ai.models.User;
 import com.hackassist.ai.Service.IProjectService;
-import com.hackassist.ai.Service.UserService;
-import com.hackassist.ai.dto.ProjectDTO;
-import lombok.extern.slf4j.Slf4j;
-import java.util.HashMap;
+import com.hackassist.ai.dto.ProjectRepoLinkRequest;
+import com.hackassist.ai.dto.ProjectRequest;
+import com.hackassist.ai.dto.ProjectResponse;
+import com.hackassist.ai.dto.ProjectUpdateRequest;
 import java.util.List;
-import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/projects")
 @CrossOrigin(origins = "*")
-@Slf4j
 public class ProjectController {
-    
-    @Autowired
-    private IProjectService projectService;
-    
-    @Autowired
-    private UserService userService;
-    
+    private final IProjectService projectService;
+
+    public ProjectController(IProjectService projectService) {
+        this.projectService = projectService;
+    }
+
     @PostMapping
-    public ResponseEntity<?> createProject(@RequestBody ProjectDTO projectDTO) {
-        try {
-            User user = userService.getUserById(projectDTO.getCreatedByUid());
-            Project project = new Project();
-            project.setName(projectDTO.getName());
-            project.setDescription(projectDTO.getDescription());
-            project.setProblemStatement(projectDTO.getProblemStatement());
-            project.setCreatedBy(user);
-            project.setGithubRepoUrl(projectDTO.getGithubRepoUrl());
-            
-            Project savedProject = projectService.createProject(project);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedProject);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        }
+    public ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectRequest request) {
+        String userId = getCurrentUserId();
+        ProjectResponse response = projectService.createProject(request, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProject(@PathVariable Long id) {
-        try {
-            Project project = projectService.getProjectById(id);
-            return ResponseEntity.ok(project);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<ProjectResponse>> getMyProjects() {
+        String userId = getCurrentUserId();
+        return ResponseEntity.ok(projectService.getProjectsByUser(userId));
     }
-    
-    @GetMapping
-    public ResponseEntity<?> getAllProjects() {
+
+    @PutMapping("/{projectId}")
+    public ResponseEntity<ProjectResponse> updateProject(
+        @PathVariable String projectId,
+        @RequestBody ProjectUpdateRequest request
+    ) {
+        String userId = getCurrentUserId();
         try {
-            List<Project> projects = projectService.getAllProjects();
-            return ResponseEntity.ok(projects);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Failed to retrieve projects: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
-    }
-    
-    @GetMapping("/user/{uid}")
-    public ResponseEntity<?> getProjectsByUser(@PathVariable String uid) {
-        try {
-            List<Project> projects = projectService.getProjectsByUser(uid);
-            return ResponseEntity.ok(projects);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-    }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody ProjectDTO projectDTO) {
-        try {
-            Project project = projectService.getProjectById(id);
-            project.setName(projectDTO.getName());
-            project.setDescription(projectDTO.getDescription());
-            project.setProblemStatement(projectDTO.getProblemStatement());
-            project.setGithubRepoUrl(projectDTO.getGithubRepoUrl());
-            
-            Project updatedProject = projectService.updateProject(project);
-            return ResponseEntity.ok(updatedProject);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-    }
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
-        try {
-            projectService.deleteProject(id);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Project deleted successfully");
+            ProjectResponse response = projectService.updateProject(projectId, request, userId);
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
+    }
+
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable String projectId) {
+        String userId = getCurrentUserId();
+        try {
+            projectService.deleteProject(projectId, userId);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
+    }
+
+    @PutMapping("/{projectId}/repo")
+    public ResponseEntity<ProjectResponse> linkRepository(
+        @PathVariable String projectId,
+        @RequestBody ProjectRepoLinkRequest request
+    ) {
+        String userId = getCurrentUserId();
+        try {
+            ProjectResponse response = projectService.linkRepository(projectId, request, userId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
+
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+        return authentication.getPrincipal().toString();
     }
 }

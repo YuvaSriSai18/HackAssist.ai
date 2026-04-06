@@ -40,6 +40,21 @@ type GithubUserResponse = {
   githubVerified?: boolean
 }
 
+type GithubRepoResponse = {
+  full_name?: string
+  html_url?: string
+  private?: boolean
+}
+
+type ProjectResponse = {
+  id?: number
+  projectId?: string
+  name?: string
+  description?: string
+  createdAt?: string
+  githubRepoUrl?: string
+}
+
 function buildHeaders(token?: string): HeadersInit {
   if (!token) return { 'Content-Type': 'application/json' }
   return {
@@ -210,4 +225,105 @@ export async function fetchGithubUser(token: string) {
 
   const payload = await parseJsonSafe<GithubUserResponse>(response)
   return payload ?? { connected: false }
+}
+
+export async function fetchGithubRepos(token: string) {
+  const response = await fetch(`${API_BASE_URL}/github/repos`, {
+    method: 'GET',
+    headers: buildHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to fetch GitHub repositories')
+  }
+
+  const payload = await parseJsonSafe<GithubRepoResponse[]>(response)
+  return payload ?? []
+}
+
+export async function createProject(token: string, payload: { name: string; description: string }) {
+  const response = await fetch(`${API_BASE_URL}/projects`, {
+    method: 'POST',
+    headers: buildHeaders(token),
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to create project')
+  }
+
+  const data = await parseJsonSafe<ProjectResponse>(response)
+  if (!data) {
+    throw new Error('Invalid project response')
+  }
+  return data
+}
+
+export async function fetchMyProjects(token: string) {
+  const response = await fetch(`${API_BASE_URL}/projects/my`, {
+    method: 'GET',
+    headers: buildHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to fetch projects')
+  }
+
+  const data = await parseJsonSafe<ProjectResponse[]>(response)
+  return data ?? []
+}
+
+export async function updateProject(
+  token: string,
+  projectId: string,
+  payload: { name?: string; description?: string }
+) {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+    method: 'PUT',
+    headers: buildHeaders(token),
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to update project')
+  }
+
+  const data = await parseJsonSafe<ProjectResponse>(response)
+  if (!data) {
+    throw new Error('Invalid project response')
+  }
+  return data
+}
+
+export async function deleteProject(token: string, projectId: string) {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+    method: 'DELETE',
+    headers: buildHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to delete project')
+  }
+}
+
+export async function linkProjectRepo(
+  token: string,
+  projectId: string,
+  payload: { repoUrl?: string; repoFullName?: string }
+) {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/repo`, {
+    method: 'PUT',
+    headers: buildHeaders(token),
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to link repository')
+  }
+
+  const data = await parseJsonSafe<ProjectResponse>(response)
+  if (!data) {
+    throw new Error('Invalid project response')
+  }
+  return data
 }

@@ -1,10 +1,13 @@
 export type Project = {
   id: string
+  backendId?: number
+  projectId?: string
   name: string
   description: string
   owner: string
   members: string[]
   createdAt: string
+  githubRepoUrl?: string
 }
 
 export const TaskStatus = {

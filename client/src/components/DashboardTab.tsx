@@ -2,9 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { DashboardLayout } from './DashboardLayout'
 import { InsightsPanel } from './InsightsPanel'
 import { ProblemInput } from './ProblemInput'
+import { ProjectRepoConnect } from './ProjectRepoConnect'
 import { TaskEditor } from './TaskEditor'
 import type { Project, Task } from '../models/types'
 import { TaskStatus } from '../models/types'
+import { useAppState } from '../context/AppState'
 
 type DashboardTabProps = {
   project: Project
@@ -31,6 +33,7 @@ export function DashboardTab({
   onUpdateTasks,
   onSaveTasks,
 }: DashboardTabProps) {
+  const { linkProjectRepo } = useAppState()
   const hasTasks = tasks.length > 0
 
   return (
@@ -73,22 +76,38 @@ export function DashboardTab({
       }
       right={
         hasTasks ? (
-          <InsightsPanel
-            progress={progress}
-            total={tasks.length}
-            completed={tasks.filter((task) => task.status === TaskStatus.DONE).length}
-            contributors={contributors}
-          />
+          <div className="space-y-6">
+            <ProjectRepoConnect
+              project={project}
+              onLink={async (projectId, repo) => {
+                await linkProjectRepo(projectId, repo)
+              }}
+            />
+            <InsightsPanel
+              progress={progress}
+              total={tasks.length}
+              completed={tasks.filter((task) => task.status === TaskStatus.DONE).length}
+              contributors={contributors}
+            />
+          </div>
         ) : (
-          <Card className="border border-dashed border-white/20 bg-white/5">
-            <CardHeader>
-              <CardTitle>Insights</CardTitle>
-              <CardDescription>Generate tasks to unlock insights.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-white/60">
-              Progress, velocity, and contributor metrics appear after your first task set.
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <ProjectRepoConnect
+              project={project}
+              onLink={async (projectId, repo) => {
+                await linkProjectRepo(projectId, repo)
+              }}
+            />
+            <Card className="border border-dashed border-white/20 bg-white/5">
+              <CardHeader>
+                <CardTitle>Insights</CardTitle>
+                <CardDescription>Generate tasks to unlock insights.</CardDescription>
+              </CardHeader>
+              <CardContent className="text-sm text-white/60">
+                Progress, velocity, and contributor metrics appear after your first task set.
+              </CardContent>
+            </Card>
+          </div>
         )
       }
     />
