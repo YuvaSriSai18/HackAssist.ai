@@ -6,10 +6,12 @@ import com.hackassist.ai.models.GitHubRepository;
 import com.hackassist.ai.models.GitCommit;
 import com.hackassist.ai.models.Project;
 import com.hackassist.ai.models.Tasks;
+import com.hackassist.ai.models.User;
 import com.hackassist.ai.repository.GitHubRepositoryRepository;
 import com.hackassist.ai.repository.GitCommitRepository;
 import com.hackassist.ai.repository.ProjectRepository;
 import com.hackassist.ai.repository.TaskRepository;
+import com.hackassist.ai.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -21,6 +23,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -38,6 +42,12 @@ public class GitHubService implements IGitHubService {
     
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
     
     @Override
     public List<GitHubRepository> fetchUserRepositories(String userToken) {
@@ -47,22 +57,23 @@ public class GitHubService implements IGitHubService {
     }
 
     @Override
-    public List<Map<String, Object>> fetchUserRepositoriesFromGithub(String accessToken) {
+    public List<Map<String, Object>> fetchUserRepositoriesByUid(String uid) {
+        String accessToken = getAccessTokenForUid(uid);
         String url = "https://api.github.com/user/repos?visibility=all&affiliation=owner,collaborator,organization_member&per_page=100";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        return getFromGitHub(url, accessToken);
+    }
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-        );
+    @Override
+    public List<Map<String, Object>> fetchCommitsByUid(String uid, String owner, String repo) {
+        String accessToken = getAccessTokenForUid(uid);
+        String url = "https://api.github.com/repos/" + owner + "/" + repo + "/commits?per_page=100";
+        return getFromGitHub(url, accessToken);
+    }
 
-        return response.getBody() == null ? List.of() : response.getBody();
+    @Override
+    public User getUserByUid(String uid) {
+        return userRepository.findById(uid)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + uid));
     }
     
     @Override
@@ -130,5 +141,30 @@ public class GitHubService implements IGitHubService {
     private String extractKeyword(String text) {
         String[] words = text.split(" ");
         return words.length > 0 ? words[0] : "";
+    }
+
+    private String getAccessTokenForUid(String uid) {
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient("github", uid);
+        if (client == null || client.getAccessToken() == null) {
+            throw new RuntimeException("GitHub access token not found for uid: " + uid);
+        }
+        return client.getAccessToken().getTokenValue();
+    }
+
+    private List<Map<String, Object>> getFromGitHub(String url, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+        );
+
+        return response.getBody() == null ? List.of() : response.getBody();
     }
 }

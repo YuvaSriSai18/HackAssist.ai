@@ -46,4 +46,5 @@ export type User = {
 
 export type GithubState = {
   connected: boolean
+  verified: boolean
 }

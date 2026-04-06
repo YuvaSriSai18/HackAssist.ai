@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -55,9 +57,10 @@ public class OAuth2ClientConfig {
 
     @Bean
     public OAuth2AuthorizedClientService authorizedClientService(
-            ClientRegistrationRepository clientRegistrationRepository) {
+            ClientRegistrationRepository clientRegistrationRepository,
+            DataSource dataSource) {
         log.info("OAuth2ClientConfig: Creating OAuth2AuthorizedClientService");
-        return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
+        return new JdbcOAuth2AuthorizedClientService(new JdbcTemplate(dataSource), clientRegistrationRepository);
     }
 
     private ClientRegistration googleClientRegistration() {

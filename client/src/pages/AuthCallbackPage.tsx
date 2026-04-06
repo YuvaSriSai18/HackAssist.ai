@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import {
   fetchCurrentUser,
+  fetchGithubUser,
   parseOAuthCallback,
 } from '../apis'
 import { useAppState } from '../context/AppState'
@@ -35,11 +36,22 @@ export function AuthCallbackPage() {
       }
 
       if (intent === 'github-connect') {
-        if (!callback.token) {
-          console.warn('[AuthCallbackPage] GitHub connect callback missing token')
+        const storedToken = window.localStorage.getItem('authToken')
+        if (!storedToken) {
+          console.warn('[AuthCallbackPage] No stored JWT for GitHub connect status')
+          setGithubConnected(false, false)
+          navigate('/profile', { replace: true })
+          return
         }
-        console.log('[AuthCallbackPage] ✓ GitHub connect flow complete')
-        setGithubConnected(true)
+        console.log('[AuthCallbackPage] Checking GitHub connection status via backend...')
+        try {
+          const response = await fetchGithubUser(storedToken)
+          const connected = Boolean(response.connected ?? response.githubVerified)
+          setGithubConnected(connected, response.githubVerified)
+        } catch (err) {
+          console.warn('[AuthCallbackPage] Failed to fetch GitHub user status', err)
+          setGithubConnected(false, false)
+        }
         navigate('/profile', { replace: true })
         return
       }

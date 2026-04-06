@@ -70,6 +70,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || requestUri.startsWith("/error");
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
+    }
+
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

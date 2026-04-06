@@ -2,8 +2,6 @@ package com.hackassist.ai.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,8 +14,8 @@ import java.time.Instant;
 public class GitHubUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(nullable = false)
+    private String githubId;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "uid", referencedColumnName = "uid", nullable = false)
@@ -26,11 +24,13 @@ public class GitHubUser {
     @Column(nullable = false)
     private String githubUsername;
 
-    private String githubId;
-
     private String name;
 
     private String avatarUrl;
+
+    @Column(nullable = false)
+    private boolean githubConnected = true;
+
 
     @Column(nullable = false)
     private boolean githubVerified = true;
@@ -40,10 +40,6 @@ public class GitHubUser {
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getUid() {
@@ -81,6 +77,15 @@ public class GitHubUser {
     public void setGithubVerified(boolean githubVerified) {
         this.githubVerified = githubVerified;
     }
+
+    public boolean isGithubConnected() {
+        return githubConnected;
+    }
+
+    public void setGithubConnected(boolean githubConnected) {
+        this.githubConnected = githubConnected;
+    }
+
 
     public String getAvatarUrl() {
         return avatarUrl;

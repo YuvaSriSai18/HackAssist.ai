@@ -1,5 +1,5 @@
 import type React from 'react'
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import type { GithubState, Member, Project, Task, User } from '../models/types'
 import { TaskPriority, TaskStatus } from '../models/types'
 
@@ -29,7 +29,7 @@ type AppState = {
   addMember: (projectId: string, member: Member) => void
   setProblem: (projectId: string, problem: string) => void
   updateGithub: (connected: boolean) => void
-  setGithubConnected: (connected: boolean) => void
+  setGithubConnected: (connected: boolean, verified?: boolean) => void
 }
 
 const AppStateContext = createContext<AppState | undefined>(undefined)
@@ -143,16 +143,38 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [mockSharedProjects[0].id]: 'Ship a collaborative mobile demo for the hackathon finals.',
   })
   const [github, setGithub] = useState<GithubState>(() => ({
-    connected: window.localStorage.getItem('githubConnected') === 'true',
+    connected: false,
+    verified: false,
   }))
 
-  const persistSession = (nextUser: User, nextToken: string) => {
+  const persistSession = useCallback((nextUser: User, nextToken: string) => {
     setUser(nextUser)
     setToken(nextToken)
     setIsAuthenticated(true)
     window.localStorage.setItem('authUser', JSON.stringify(nextUser))
     window.localStorage.setItem('authToken', nextToken)
-  }
+  }, [])
+
+  const persistGithubStatus = useCallback((connected: boolean, verified?: boolean) => {
+    setGithub((prev) => ({
+      connected,
+      verified: verified ?? prev.verified,
+    }))
+  }, [])
+
+  const setGithubConnected = useCallback(
+    (connected: boolean, verified?: boolean) => {
+      persistGithubStatus(connected, verified)
+    },
+    [persistGithubStatus]
+  )
+
+  const updateGithub = useCallback(
+    (connected: boolean) => {
+      persistGithubStatus(connected)
+    },
+    [persistGithubStatus]
+  )
 
   const value = useMemo<AppState>(
     () => ({
@@ -184,10 +206,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         setToken(null)
         setIsAuthenticated(false)
         setSelectedProjectId(null)
-        setGithub({ connected: false })
+        setGithub({ connected: false, verified: false })
         window.localStorage.removeItem('authUser')
         window.localStorage.removeItem('authToken')
-        window.localStorage.removeItem('githubConnected')
       },
       selectProject: setSelectedProjectId,
       createProject: (project) => {
@@ -209,14 +230,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setProblem: (projectId, problem) => {
         setProblemByProject((prev) => ({ ...prev, [projectId]: problem }))
       },
-      updateGithub: (connected) => {
-        setGithub({ connected })
-        window.localStorage.setItem('githubConnected', String(connected))
-      },
-      setGithubConnected: (connected) => {
-        setGithub({ connected })
-        window.localStorage.setItem('githubConnected', String(connected))
-      },
+      updateGithub,
+      setGithubConnected,
     }),
     [
       user,
@@ -229,6 +244,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       membersByProject,
       problemByProject,
       github,
+      updateGithub,
+      setGithubConnected,
+      persistSession,
     ]
   )
 

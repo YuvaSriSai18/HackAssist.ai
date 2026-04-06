@@ -31,6 +31,15 @@ type OAuthCallbackPayload = {
   error: string | null
 }
 
+type GithubUserResponse = {
+  connected?: boolean
+  githubId?: string
+  githubUsername?: string
+  name?: string
+  avatarUrl?: string
+  githubVerified?: boolean
+}
+
 function buildHeaders(token?: string): HeadersInit {
   if (!token) return { 'Content-Type': 'application/json' }
   return {
@@ -60,7 +69,7 @@ export function getGithubAuthUrl() {
 
 export function getGithubConnectUrl() {
   const token = window.localStorage.getItem('authToken')
-  const url = `${API_BASE_URL}/auth/github/connect?token=${encodeURIComponent(token ?? '')}`
+  const url = `${API_BASE_URL}/github/connect?token=${encodeURIComponent(token ?? '')}`
   console.log('[APIs] GitHub connect URL:', url)
   return url
 }
@@ -173,4 +182,32 @@ export async function logoutRequest(token?: string) {
     method: 'POST',
     headers: buildHeaders(token),
   })
+}
+
+export async function fetchGithubConnectionStatus(token: string) {
+  const response = await fetch(`${API_BASE_URL}/github/user`, {
+    method: 'GET',
+    headers: buildHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to fetch GitHub connection status')
+  }
+
+  const payload = await parseJsonSafe<{ connected?: boolean }>(response)
+  return Boolean(payload?.connected)
+}
+
+export async function fetchGithubUser(token: string) {
+  const response = await fetch(`${API_BASE_URL}/github/user`, {
+    method: 'GET',
+    headers: buildHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to fetch GitHub user')
+  }
+
+  const payload = await parseJsonSafe<GithubUserResponse>(response)
+  return payload ?? { connected: false }
 }

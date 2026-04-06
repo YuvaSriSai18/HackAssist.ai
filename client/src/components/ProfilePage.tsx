@@ -1,15 +1,9 @@
-import { redirectToGithubConnect } from '../apis'
 import { GithubConnectButton } from './GithubConnectButton'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { useAppState } from '../context/AppState'
 
 export function ProfilePage() {
-  const { user, github } = useAppState()
-
-  const handleConnect = () => {
-    window.localStorage.setItem('oauthIntent', 'github-connect')
-    redirectToGithubConnect()
-  }
+  const { user } = useAppState()
 
   if (!user) {
     return null
@@ -32,7 +26,7 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      <GithubConnectButton connected={github.connected} onConnect={handleConnect} />
+      <GithubConnectButton />
     </div>
   )
 }
