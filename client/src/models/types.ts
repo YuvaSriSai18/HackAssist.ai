@@ -51,3 +51,50 @@ export type GithubState = {
   connected: boolean
   verified: boolean
 }
+
+export type PlanFeature = {
+  key: string
+  name: string
+  description: string
+  priority: TaskPriority
+}
+
+export type PlanModule = {
+  key: string
+  name: string
+  description: string
+}
+
+export type PlanRisk = {
+  title: string
+  impact: string
+  mitigation: string
+}
+
+export type PlanTask = {
+  externalId: string
+  title: string
+  description: string
+  priority: TaskPriority
+  status: TaskStatus
+  estimatedHours?: number
+  moduleKey?: string
+  dependsOn?: string[]
+}
+
+export type TechStack = {
+  backend: string
+  frontend: string
+  database: string
+  architecture: string
+}
+
+export type ProjectPlan = {
+  projectId: string
+  problemStatement: string
+  techStack: TechStack
+  features: PlanFeature[]
+  modules: PlanModule[]
+  tasks: PlanTask[]
+  risks: PlanRisk[]
+}

@@ -1,163 +1,117 @@
 package com.hackassist.ai.Service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.hackassist.ai.dto.AIGeneratedTaskDTO;
-import com.hackassist.ai.dto.AITasksResponseDTO;
-import com.hackassist.ai.dto.FeatureDTO;
-import lombok.extern.slf4j.Slf4j;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class GeminiService implements IAIService {
-    
+public class GeminiService {
+
     @Value("${gemini.api.key}")
-    private String geminiApiKey;
-    
-    @Value("${gemini.model.name}")
-    private String modelName;
-    
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/";
-    private final Gson gson = new Gson();
+    private String apiKey;
+
+    private static final String API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/";
+    private static final String PRIMARY_MODEL = "models/gemini-2.5-flash";
+    private static final String FALLBACK_MODEL = "models/gemini-2.5-flash-lite";
     private final HttpClient httpClient = HttpClient.newHttpClient();
-    
-    @Override
-    public AITasksResponseDTO generateTasksFromProblemStatement(String problemStatement, String hackathonTheme) {
-        if (geminiApiKey == null || geminiApiKey.isEmpty()) {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public String generateContent(String prompt) {
+        if (apiKey == null || apiKey.isEmpty()) {
             log.error("Gemini API key not configured");
             throw new RuntimeException("Gemini API key not configured");
         }
-        
-        String prompt = String.format(
-            "You are a hackathon project assistant. Given the problem statement, break it down into concrete, actionable tasks.\n\n" +
-            "Problem Statement: %s\n" +
-            "Hackathon Theme: %s\n\n" +
-            "Please provide:\n" +
-            "1. A list of features needed\n" +
-            "2. A breakdown of tasks with title, description, estimated hours, and priority\n" +
-            "3. Recommended technologies\n" +
-            "4. A brief project summary\n\n" +
-            "Return the response in JSON format with keys: features, tasks, recommendedTechnologies, summary",
-            problemStatement, hackathonTheme
-        );
-        
+
         try {
-            String response = callGeminiAPI(prompt);
-            return parseAIResponse(response, problemStatement);
-        } catch (Exception e) {
-            log.error("Error calling Gemini API", e);
-            throw new RuntimeException("Failed to generate tasks from AI: " + e.getMessage());
+            String trimmedPrompt = prompt == null ? "" : prompt.trim();
+            String promptPreview = trimmedPrompt.length() > 200 ? trimmedPrompt.substring(0, 200) + "..." : trimmedPrompt;
+            String payload = buildRequestPayload(prompt);
+
+            return callGemini(PRIMARY_MODEL, payload, promptPreview);
+        } catch (RuntimeException ex) {
+            log.warn("Primary Gemini model failed, attempting fallback: {}", ex.getMessage());
+            String payload = buildRequestPayload(prompt);
+            return callGemini(FALLBACK_MODEL, payload, prompt == null ? "" : prompt.trim());
         }
     }
-    
-    @Override
-    public List<FeatureDTO> generateFeatures(String problemStatement) {
-        String prompt = String.format(
-            "Based on this problem statement, identify and list the key features needed:\n" +
-            "%s\n\n" +
-            "Return JSON array with objects containing: name, description, priority, technologiesNeeded (array)",
-            problemStatement
-        );
-        
+
+    private String callGemini(String model, String payload, String promptPreview) {
+        String url = API_BASE_URL + model + ":generateContent";
+        log.info("Calling Gemini API URL: {}", url);
+        log.info("Gemini model: {}", model);
+        log.info("Gemini prompt preview: {}", promptPreview);
+
         try {
-            String response = callGeminiAPI(prompt);
-            return parseFeatures(response);
-        } catch (Exception e) {
-            log.error("Error generating features", e);
-            return new ArrayList<>();
-        }
-    }
-    
-    @Override
-    public String generateProjectSummary(Long projectId) {
-        return "Project summary generated. Features and progress tracked.";
-    }
-    
-    private String callGeminiAPI(String prompt) throws IOException, InterruptedException {
-        String url = GEMINI_API_URL + modelName + ":generateContent?key=" + geminiApiKey;
-        
-        JsonObject requestBody = new JsonObject();
-        JsonArray contentsArray = new JsonArray();
-        JsonObject content = new JsonObject();
-        JsonArray partsArray = new JsonArray();
-        JsonObject part = new JsonObject();
-        
-        part.addProperty("text", prompt);
-        partsArray.add(part);
-        content.add("parts", partsArray);
-        contentsArray.add(content);
-        requestBody.add("contents", contentsArray);
-        
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-            .build();
-        
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        
-        if (response.statusCode() != 200) {
-            throw new RuntimeException("Gemini API error: " + response.statusCode() + " - " + response.body());
-        }
-        
-        return response.body();
-    }
-    
-    private AITasksResponseDTO parseAIResponse(String apiResponse, String problemStatement) {
-        AITasksResponseDTO dto = new AITasksResponseDTO();
-        dto.setProjectName("Hackathon Project");
-        dto.setProjectSummary("Project generated from problem statement");
-        dto.setFeatures(new ArrayList<>());
-        dto.setTasks(new ArrayList<>());
-        dto.setRecommendedTechnologies(Arrays.asList("Backend", "Frontend", "Database"));
-        
-        try {
-            JsonObject jsonResponse = gson.fromJson(apiResponse, JsonObject.class);
-            
-            if (jsonResponse.has("candidates")) {
-                JsonArray candidates = jsonResponse.getAsJsonArray("candidates");
-                if (candidates.size() > 0) {
-                    JsonObject candidate = candidates.get(0).getAsJsonObject();
-                    if (candidate.has("content")) {
-                        JsonObject content = candidate.getAsJsonObject("content");
-                        if (content.has("parts")) {
-                            JsonArray parts = content.getAsJsonArray("parts");
-                            if (parts.size() > 0) {
-                                String text = parts.get(0).getAsJsonObject().get("text").getAsString();
-                                // Parse the text response into structured data
-                                dto.setProjectSummary(text.substring(0, Math.min(200, text.length())));
-                            }
-                        }
-                    }
-                }
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url + "?key=" + apiKey))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload))
+                .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            log.info("Gemini API response status: {}", response.statusCode());
+
+            if (response.statusCode() != 200) {
+                log.error("Gemini API failed using model {} - Status: {}, Body: {}", model, response.statusCode(), response.body());
+                throw new RuntimeException("Gemini API error using model " + model + ": " + response.statusCode());
             }
-        } catch (Exception e) {
-            log.warn("Error parsing AI response, returning default structure", e);
+
+            log.info("Gemini API response received successfully ({} chars)", response.body().length());
+            return extractText(response.body());
+        } catch (Exception ex) {
+            log.error("Gemini API call failed using model {}: {}", model, ex.getMessage(), ex);
+            throw new RuntimeException("Gemini API call failed using model " + model + ": " + ex.getMessage());
         }
-        
-        return dto;
     }
-    
-    private List<FeatureDTO> parseFeatures(String response) {
-        List<FeatureDTO> features = new ArrayList<>();
+
+    private String buildRequestPayload(String prompt) {
+        return "{" +
+            "\"contents\":[{" +
+            "\"parts\":[{" +
+            "\"text\":" + objectMapper.valueToTree(prompt).toString() +
+            "}]" +
+            "}]" +
+            "}";
+    }
+
+    private String extractText(String apiResponse) {
         try {
-            JsonObject jsonResponse = gson.fromJson(response, JsonObject.class);
-            // Parse features from response
-            features.add(new FeatureDTO("Core Feature", "Main feature", "HIGH", Arrays.asList("Tech1", "Tech2")));
-        } catch (Exception e) {
-            log.error("Error parsing features", e);
+            JsonNode root = objectMapper.readTree(apiResponse);
+            JsonNode candidates = root.path("candidates");
+            if (!candidates.isArray() || candidates.isEmpty()) {
+                throw new RuntimeException("Gemini response missing candidates");
+            }
+
+            JsonNode content = candidates.path(0).path("content");
+            if (content.isMissingNode() || content.isNull()) {
+                throw new RuntimeException("Gemini response missing content");
+            }
+
+            JsonNode parts = content.path("parts");
+            if (!parts.isArray() || parts.isEmpty()) {
+                throw new RuntimeException("Gemini response missing parts");
+            }
+
+            JsonNode textNode = parts.path(0).path("text");
+            if (textNode.isMissingNode() || textNode.isNull()) {
+                throw new RuntimeException("Gemini response missing text content");
+            }
+
+            String text = textNode.asText();
+            if (text == null || text.isBlank()) {
+                throw new RuntimeException("Gemini response text is empty");
+            }
+            return text;
+        } catch (Exception ex) {
+            log.error("Unable to parse Gemini response: {}", ex.getMessage());
+            throw new RuntimeException("Unable to parse Gemini response: " + ex.getMessage());
         }
-        return features;
     }
 }

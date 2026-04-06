@@ -1,14 +1,7 @@
 package com.hackassist.ai.Service;
 
-import com.hackassist.ai.dto.AITasksResponseDTO;
-import com.hackassist.ai.dto.FeatureDTO;
-import java.util.List;
+import com.hackassist.ai.dto.plan.ProjectPlanDTO;
 
 public interface IAIService {
-    
-    AITasksResponseDTO generateTasksFromProblemStatement(String problemStatement, String hackathonTheme);
-    
-    List<FeatureDTO> generateFeatures(String problemStatement);
-    
-    String generateProjectSummary(Long projectId);
+    ProjectPlanDTO generatePlan(String projectId, String problemStatement, String userId);
 }

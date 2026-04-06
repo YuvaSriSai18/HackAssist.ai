@@ -1,6 +1,8 @@
 package com.hackassist.ai.controller;
 
 import com.hackassist.ai.Service.IProjectService;
+import com.hackassist.ai.Service.ProjectPlanningService;
+import com.hackassist.ai.dto.plan.ProjectPlanDTO;
 import com.hackassist.ai.dto.ProjectRepoLinkRequest;
 import com.hackassist.ai.dto.ProjectRequest;
 import com.hackassist.ai.dto.ProjectResponse;
@@ -26,9 +28,11 @@ import org.springframework.web.server.ResponseStatusException;
 @CrossOrigin(origins = "*")
 public class ProjectController {
     private final IProjectService projectService;
+    private final ProjectPlanningService planningService;
 
-    public ProjectController(IProjectService projectService) {
+    public ProjectController(IProjectService projectService, ProjectPlanningService planningService) {
         this.projectService = projectService;
+        this.planningService = planningService;
     }
 
     @PostMapping
@@ -78,6 +82,20 @@ public class ProjectController {
         try {
             ProjectResponse response = projectService.linkRepository(projectId, request, userId);
             return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
+
+    @PostMapping("/{projectId}/finalize-tasks")
+    public ResponseEntity<Void> finalizeTasks(
+        @PathVariable String projectId,
+        @RequestBody ProjectPlanDTO plan
+    ) {
+        String userId = getCurrentUserId();
+        try {
+            planningService.saveProjectPlan(projectId, plan, userId);
+            return ResponseEntity.ok().build();
         } catch (RuntimeException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }

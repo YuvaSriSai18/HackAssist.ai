@@ -6,8 +6,9 @@ import { ProjectTabs } from '../components/ProjectTabs'
 import { TeamTab } from '../components/TeamTab'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'
+import { finalizeTasks, generateTasks } from '../apis'
 import { useAppState } from '../context/AppState'
-import type { Project, Task } from '../models/types'
+import type { Project, ProjectPlan, Task } from '../models/types'
 import { TaskPriority, TaskStatus } from '../models/types'
 
 type ProjectTabKey = 'dashboard' | 'kanban' | 'team'
@@ -23,10 +24,14 @@ export function ProjectWorkspacePage() {
     addMember,
     selectProject,
     setProblem,
+    token,
   } = useAppState()
   const { projectId } = useParams()
   const [activeTab, setActiveTab] = useState<ProjectTabKey>('dashboard')
   const [loadingTasks, setLoadingTasks] = useState(false)
+  const [plan, setPlan] = useState<ProjectPlan | null>(null)
+  const [planSaving, setPlanSaving] = useState(false)
+  const [planError, setPlanError] = useState<string | null>(null)
 
   const project = useMemo<Project | undefined>(
     () =>
@@ -71,21 +76,94 @@ export function ProjectWorkspacePage() {
   )
 
   const handleGenerateTasks = () => {
-    if (!projectId) return
+    if (!project || !token) {
+      console.error('[ProjectWorkspacePage] Missing project or token')
+      return
+    }
+    const resolvedProjectId = project.projectId ?? project.id
+    console.log('[ProjectWorkspacePage] Starting task generation for project:', resolvedProjectId)
+    console.log('[ProjectWorkspacePage] Problem statement:', problem)
     setLoadingTasks(true)
-    setTimeout(() => {
-      const newTask: Task = {
-        id: `task-${Date.now()}`,
-        title: 'Presentation summary generator',
-        description: 'Auto-create final demo narrative in 90 seconds.',
-        priority: TaskPriority.MEDIUM,
-        status: TaskStatus.TODO,
-        assignee: 'Nova',
+    setPlanError(null)
+    generateTasks(token, { projectId: resolvedProjectId, problemStatement: problem })
+      .then((response) => {
+        console.log('[ProjectWorkspacePage] Generate tasks successful, mapping response...')
+        const nextPlan: ProjectPlan = {
+          projectId: response.projectId ?? resolvedProjectId,
+          problemStatement: response.problemStatement ?? problem,
+          techStack: {
+            backend: response.techStack?.backend ?? 'Spring Boot (Java)',
+            frontend: response.techStack?.frontend ?? 'React + Tailwind + shadcn',
+            database: response.techStack?.database ?? 'MySQL/PostgreSQL',
+            architecture: response.techStack?.architecture ?? 'REST APIs',
+          },
+          features:
+            response.features?.map((feature, idx) => ({
+              key: feature.key ?? `F-${String(idx + 1).padStart(3, '0')}`,
+              name: feature.name ?? 'Feature',
+              description: feature.description ?? '',
+              priority: (feature.priority as TaskPriority) ?? TaskPriority.MEDIUM,
+            })) ?? [],
+          modules:
+            response.modules?.map((module, idx) => ({
+              key: module.key ?? `M-${String(idx + 1).padStart(3, '0')}`,
+              name: module.name ?? 'Module',
+              description: module.description ?? '',
+            })) ?? [],
+          tasks:
+            response.tasks?.map((task, idx) => ({
+              externalId: task.externalId ?? `TSK-${String(idx + 1).padStart(3, '0')}`,
+              title: task.title ?? 'Task',
+              description: task.description ?? '',
+              priority: (task.priority as TaskPriority) ?? TaskPriority.MEDIUM,
+              status: (task.status as TaskStatus) ?? TaskStatus.TODO,
+              estimatedHours: task.estimatedHours ?? undefined,
+              moduleKey: task.moduleKey ?? undefined,
+              dependsOn: task.dependsOn ?? [],
+            })) ?? [],
+          risks:
+            response.risks?.map((risk) => ({
+              title: risk.title ?? 'Risk',
+              impact: risk.impact ?? '',
+              mitigation: risk.mitigation ?? '',
+            })) ?? [],
+        }
+        console.log('[ProjectWorkspacePage] Setting plan state with', nextPlan.tasks.length, 'tasks')
+        setPlan(nextPlan)
+      })
+      .catch((err) => {
+        console.error('[ProjectWorkspacePage] AI plan generation failed', err)
+        setPlanError(err.message || 'Unable to generate tasks. Please try again.')
+      })
+      .finally(() => {
+        setLoadingTasks(false)
+      })
+  }
+
+  const handleFinalizePlan = async () => {
+    if (!project || !token || !plan) return
+    const resolvedProjectId = project.projectId ?? project.id
+    setPlanSaving(true)
+    setPlanError(null)
+    try {
+      await finalizeTasks(token, resolvedProjectId, plan)
+      const mappedTasks: Task[] = plan.tasks.map((task) => ({
+        id: task.externalId,
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        status: task.status,
+        assignee: 'Unassigned',
         commits: [],
-      }
-      updateTasks(projectId, [newTask, ...projectTasks])
-      setLoadingTasks(false)
-    }, 900)
+      }))
+      updateTasks(resolvedProjectId, mappedTasks)
+      setPlan(null)
+    } catch (err) {
+      console.error('[ProjectWorkspacePage] Failed to finalize plan', err)
+      setPlanError('Unable to finalize tasks. Please try again.')
+    } finally {
+      setPlanSaving(false)
+    }
   }
 
   const handleMoveTask = (id: string, status: TaskStatus) => {
@@ -159,10 +237,15 @@ export function ProjectWorkspacePage() {
           tasks={projectTasks}
           problem={problem}
           loading={loadingTasks}
+          plan={plan}
+          planSaving={planSaving}
+          planError={planError}
           progress={progress}
           contributors={contributors}
           onProblemChange={(value) => setProblem(projectId, value)}
           onGenerateTasks={handleGenerateTasks}
+          onPlanChange={setPlan}
+          onFinalizePlan={handleFinalizePlan}
           onUpdateTasks={(next) => updateTasks(projectId, next)}
           onSaveTasks={handleSaveTasks}
         />

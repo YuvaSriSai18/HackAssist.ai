@@ -1,78 +1,58 @@
 package com.hackassist.ai.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import com.hackassist.ai.Service.IAIService;
-import com.hackassist.ai.dto.ProblemStatementRequestDTO;
-import com.hackassist.ai.dto.AITasksResponseDTO;
-import com.hackassist.ai.dto.FeatureDTO;
+import com.hackassist.ai.dto.plan.GenerateTasksRequest;
+import com.hackassist.ai.dto.plan.ProjectPlanDTO;
 import lombok.extern.slf4j.Slf4j;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/ai")
 @CrossOrigin(origins = "*")
 @Slf4j
 public class AIController {
-    
-    @Autowired
-    private IAIService aiService;
-    
+
+    private final IAIService aiService;
+
+    public AIController(IAIService aiService) {
+        this.aiService = aiService;
+    }
+
     @PostMapping("/generate-tasks")
-    public ResponseEntity<?> generateTasks(@RequestBody ProblemStatementRequestDTO request) {
+    public ResponseEntity<?> generateTasks(@RequestBody GenerateTasksRequest request) {
+        String userId = getCurrentUserId();
+        log.info("=== AIController.generateTasks ===");
+        log.info("Request projectId: {}", request.getProjectId());
+        log.info("Request problemStatement: {}", request.getProblemStatement());
+        log.info("UserId: {}", userId);
         try {
-            log.info("Generating tasks from problem statement");
-            AITasksResponseDTO response = aiService.generateTasksFromProblemStatement(
+            ProjectPlanDTO response = aiService.generatePlan(
+                request.getProjectId(),
                 request.getProblemStatement(),
-                request.getHackathonTheme()
+                userId
             );
+            log.info("Successfully generated plan for project: {}", request.getProjectId());
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error generating tasks", e);
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Failed to generate tasks: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        } catch (RuntimeException ex) {
+            log.error("Error generating plan: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("AI generation failed");
         }
     }
-    
-    @PostMapping("/generate-features")
-    public ResponseEntity<?> generateFeatures(@RequestBody Map<String, String> request) {
-        try {
-            String problemStatement = request.get("problemStatement");
-            List<FeatureDTO> features = aiService.generateFeatures(problemStatement);
-            return ResponseEntity.ok(features);
-        } catch (Exception e) {
-            log.error("Error generating features", e);
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Failed to generate features: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-    }
-    
-    @GetMapping("/summary/{projectId}")
-    public ResponseEntity<?> getProjectSummary(@PathVariable Long projectId) {
-        try {
-            String summary = aiService.generateProjectSummary(projectId);
-            Map<String, String> response = new HashMap<>();
-            response.put("summary", summary);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error generating summary", e);
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Failed to generate summary: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
-    }
-    
-    @GetMapping("/health")
-    public ResponseEntity<?> healthCheck() {
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "AI Service is running");
-        response.put("geminiIntegration", "Ready to process problem statements");
-        return ResponseEntity.ok(response);
+        return authentication.getPrincipal().toString();
     }
 }

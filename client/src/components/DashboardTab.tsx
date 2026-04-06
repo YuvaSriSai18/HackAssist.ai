@@ -2,9 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { DashboardLayout } from './DashboardLayout'
 import { InsightsPanel } from './InsightsPanel'
 import { ProblemInput } from './ProblemInput'
+import { ProjectPlanEditor } from './ProjectPlanEditor'
 import { ProjectRepoConnect } from './ProjectRepoConnect'
 import { TaskEditor } from './TaskEditor'
-import type { Project, Task } from '../models/types'
+import type { Project, ProjectPlan, Task } from '../models/types'
 import { TaskStatus } from '../models/types'
 import { useAppState } from '../context/AppState'
 
@@ -13,10 +14,15 @@ type DashboardTabProps = {
   tasks: Task[]
   problem: string
   loading: boolean
+  plan: ProjectPlan | null
+  planSaving: boolean
+  planError: string | null
   progress: number
   contributors: { name: string; tasks: number; velocity: string }[]
   onProblemChange: (value: string) => void
   onGenerateTasks: () => void
+  onPlanChange: (plan: ProjectPlan) => void
+  onFinalizePlan: () => void
   onUpdateTasks: (tasks: Task[]) => void
   onSaveTasks: () => void
 }
@@ -26,15 +32,21 @@ export function DashboardTab({
   tasks,
   problem,
   loading,
+  plan,
+  planSaving,
+  planError,
   progress,
   contributors,
   onProblemChange,
   onGenerateTasks,
+  onPlanChange,
+  onFinalizePlan,
   onUpdateTasks,
   onSaveTasks,
 }: DashboardTabProps) {
   const { linkProjectRepo } = useAppState()
   const hasTasks = tasks.length > 0
+  const hasPlan = Boolean(plan)
 
   return (
     <DashboardLayout
@@ -46,7 +58,7 @@ export function DashboardTab({
               <CardDescription>{project.description}</CardDescription>
             </CardHeader>
           </Card>
-          {!hasTasks && (
+          {!hasTasks && !hasPlan && (
             <ProblemInput
               problem={problem}
               onChange={onProblemChange}
@@ -54,7 +66,7 @@ export function DashboardTab({
               loading={loading}
             />
           )}
-          {hasTasks && (
+          {(hasTasks || hasPlan) && (
             <Card className="border border-white/10 bg-white/5">
               <CardHeader>
                 <CardTitle>Problem Summary</CardTitle>
@@ -63,7 +75,15 @@ export function DashboardTab({
               <CardContent className="text-sm text-white/70">{problem}</CardContent>
             </Card>
           )}
-          {hasTasks ? (
+          {hasPlan && plan ? (
+            <ProjectPlanEditor
+              plan={plan}
+              onPlanChange={onPlanChange}
+              onSave={onFinalizePlan}
+              saving={planSaving}
+              error={planError}
+            />
+          ) : hasTasks ? (
             <TaskEditor tasks={tasks} onUpdate={onUpdateTasks} onSave={onSaveTasks} />
           ) : (
             <Card className="border border-dashed border-white/20 bg-white/5">

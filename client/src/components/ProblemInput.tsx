@@ -11,6 +11,7 @@ type ProblemInputProps = {
 }
 
 export function ProblemInput({ problem, onChange, onGenerate, loading }: ProblemInputProps) {
+  const isDisabled = loading || !problem.trim()
 
   return (
     <Card className="bg-white/4">
@@ -22,7 +23,7 @@ export function ProblemInput({ problem, onChange, onGenerate, loading }: Problem
         <Textarea value={problem} onChange={(event) => onChange(event.target.value)} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-white/50">{problem.length} characters</p>
-          <Button onClick={onGenerate} disabled={loading} variant="accent">
+          <Button onClick={onGenerate} disabled={isDisabled} variant="accent">
             <Wand2 size={18} />
             {loading ? 'Generating...' : 'Generate Tasks'}
           </Button>

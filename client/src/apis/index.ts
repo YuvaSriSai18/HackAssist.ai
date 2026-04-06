@@ -55,6 +55,30 @@ type ProjectResponse = {
   githubRepoUrl?: string
 }
 
+type ProjectPlanResponse = {
+  projectId?: string
+  problemStatement?: string
+  techStack?: {
+    backend?: string
+    frontend?: string
+    database?: string
+    architecture?: string
+  }
+  features?: Array<{ key?: string; name?: string; description?: string; priority?: string }>
+  modules?: Array<{ key?: string; name?: string; description?: string }>
+  tasks?: Array<{
+    externalId?: string
+    title?: string
+    description?: string
+    priority?: string
+    status?: string
+    estimatedHours?: number
+    moduleKey?: string
+    dependsOn?: string[]
+  }>
+  risks?: Array<{ title?: string; impact?: string; mitigation?: string }>
+}
+
 function buildHeaders(token?: string): HeadersInit {
   if (!token) return { 'Content-Type': 'application/json' }
   return {
@@ -271,6 +295,56 @@ export async function fetchMyProjects(token: string) {
 
   const data = await parseJsonSafe<ProjectResponse[]>(response)
   return data ?? []
+}
+
+export async function generateTasks(
+  token: string,
+  payload: { projectId: string; problemStatement: string }
+) {
+  console.log('[generateTasks] Sending request:', {
+    projectId: payload.projectId,
+    problemStatement: payload.problemStatement?.substring(0, 50) + '...',
+  })
+
+  if (!payload.projectId || !payload.projectId.trim()) {
+    throw new Error('Project ID is required')
+  }
+
+  if (!payload.problemStatement || !payload.problemStatement.trim()) {
+    throw new Error('Problem statement is required')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/ai/generate-tasks`, {
+    method: 'POST',
+    headers: buildHeaders(token),
+    body: JSON.stringify(payload),
+  })
+
+  console.log('[generateTasks] Response status:', response.status)
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('[generateTasks] Error response:', errorText)
+    throw new Error(`Generate tasks failed: ${response.status} - ${errorText}`)
+  }
+
+  const data = await parseJsonSafe<ProjectPlanResponse>(response)
+  if (!data) {
+    throw new Error('Invalid AI response')
+  }
+  return data
+}
+
+export async function finalizeTasks(token: string, projectId: string, payload: ProjectPlanResponse) {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/finalize-tasks`, {
+    method: 'POST',
+    headers: buildHeaders(token),
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to finalize tasks')
+  }
 }
 
 export async function updateProject(
