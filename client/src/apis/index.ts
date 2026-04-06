@@ -332,10 +332,35 @@ export async function generateTasks(
   if (!data) {
     throw new Error('Invalid AI response')
   }
+  console.log('[generateTasks] Received response data:')
+  console.log('[generateTasks] problemStatement:', data.problemStatement)
+  console.log('[generateTasks] tasks count:', data.tasks?.length ?? 0)
+  console.log('[generateTasks] features count:', data.features?.length ?? 0)
+  console.log('[generateTasks] modules count:', data.modules?.length ?? 0)
+  return data
+}
+
+export async function fetchProjectPlan(token: string, projectId: string) {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/plan`, {
+    method: 'GET',
+    headers: buildHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error('Unable to fetch project plan')
+  }
+
+  const data = await parseJsonSafe<ProjectPlanResponse>(response)
+  if (!data) {
+    throw new Error('Invalid project plan response')
+  }
   return data
 }
 
 export async function finalizeTasks(token: string, projectId: string, payload: ProjectPlanResponse) {
+  console.log('[API] finalizeTasks called with projectId:', projectId)
+  console.log('[API] finalizeTasks payload:', JSON.stringify(payload, null, 2))
+  console.log('[API] finalizeTasks payload.problemStatement:', payload.problemStatement)
   const response = await fetch(`${API_BASE_URL}/projects/${projectId}/finalize-tasks`, {
     method: 'POST',
     headers: buildHeaders(token),

@@ -10,6 +10,8 @@ import java.util.List;
 public interface RiskAlertRepository extends JpaRepository<RiskAlert, Long> {
     
     List<RiskAlert> findByProject(Project project);
+
+    void deleteByProject(Project project);
     
     List<RiskAlert> findByProjectAndStatus(Project project, String status);
 }

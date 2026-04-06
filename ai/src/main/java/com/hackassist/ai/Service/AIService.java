@@ -78,7 +78,7 @@ public class AIService implements IAIService {
 
     private String buildPrompt(String projectId, String projectName, String problemStatement) {
         return "You are a senior software planner generating an implementation plan.\n" +
-            "Constraints:\n" +
+            "Suggested Tech Stack (feel free to recommend alternatives if better suited):\n" +
             "- Backend: Spring Boot (Java)\n" +
             "- Frontend: React + Tailwind + shadcn\n" +
             "- Database: MySQL/PostgreSQL\n" +
@@ -93,10 +93,10 @@ public class AIService implements IAIService {
             "  \"projectId\": \"" + projectId + "\",\n" +
             "  \"problemStatement\": \"...\",\n" +
             "  \"techStack\": {\n" +
-            "    \"backend\": \"Spring Boot (Java)\",\n" +
-            "    \"frontend\": \"React + Tailwind + shadcn\",\n" +
-            "    \"database\": \"MySQL/PostgreSQL\",\n" +
-            "    \"architecture\": \"REST APIs\"\n" +
+            "    \"backend\": \"Spring Boot (Java) or alternative\",\n" +
+            "    \"frontend\": \"React + Tailwind + shadcn or alternative\",\n" +
+            "    \"database\": \"MySQL/PostgreSQL or alternative\",\n" +
+            "    \"architecture\": \"REST APIs or alternative\"\n" +
             "  },\n" +
             "  \"features\": [\n" +
             "    {\"key\": \"F-001\", \"name\": \"...\", \"description\": \"...\", \"priority\": \"HIGH\"}\n" +

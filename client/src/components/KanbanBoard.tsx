@@ -5,17 +5,16 @@ import { TaskCard } from './TaskCard'
 
 type KanbanBoardProps = {
   tasks: Task[]
-  onMove: (id: string, status: TaskStatus) => void
 }
 
 const columns: TaskStatus[] = [TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.DONE]
 
-export function KanbanBoard({ tasks, onMove }: KanbanBoardProps) {
+export function KanbanBoard({ tasks }: KanbanBoardProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Execution Kanban</CardTitle>
-        <CardDescription>Quickly move tasks across phases with one tap.</CardDescription>
+        <CardDescription>Tasks automatically progress through phases as AI evaluates the codebase.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 lg:grid-cols-3">
         {tasks.length === 0 && (
@@ -35,7 +34,7 @@ export function KanbanBoard({ tasks, onMove }: KanbanBoardProps) {
               {tasks
                 .filter((task) => task.status === status)
                 .map((task) => (
-                  <TaskCard key={task.id} task={task} onMove={onMove} />
+                  <TaskCard key={task.id} task={task} />
                 ))}
             </div>
           </div>

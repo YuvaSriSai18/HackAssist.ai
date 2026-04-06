@@ -41,6 +41,11 @@ public class AIController {
                 userId
             );
             log.info("Successfully generated plan for project: {}", request.getProjectId());
+            log.info("Response problemStatement: '{}'", response.getProblemStatement());
+            log.info("Response projectId: '{}'", response.getProjectId());
+            log.info("Response features count: {}", response.getFeatures() != null ? response.getFeatures().size() : 0);
+            log.info("Response modules count: {}", response.getModules() != null ? response.getModules().size() : 0);
+            log.info("Response tasks count: {}", response.getTasks() != null ? response.getTasks().size() : 0);
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             log.error("Error generating plan: {}", ex.getMessage(), ex);

@@ -8,6 +8,7 @@ import com.hackassist.ai.dto.ProjectRequest;
 import com.hackassist.ai.dto.ProjectResponse;
 import com.hackassist.ai.dto.ProjectUpdateRequest;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/projects")
 @CrossOrigin(origins = "*")
+@Slf4j
 public class ProjectController {
     private final IProjectService projectService;
     private final ProjectPlanningService planningService;
@@ -94,10 +96,30 @@ public class ProjectController {
     ) {
         String userId = getCurrentUserId();
         try {
+            log.info("=== ProjectController.finalizeTasks ===");
+            log.info("projectId: {}", projectId);
+            log.info("userId: {}", userId);
+            log.info("Received plan - problemStatement: '{}'", plan.getProblemStatement());
+            log.info("Received plan - features count: {}", plan.getFeatures() != null ? plan.getFeatures().size() : 0);
+            log.info("Received plan - modules count: {}", plan.getModules() != null ? plan.getModules().size() : 0);
+            log.info("Received plan - tasks count: {}", plan.getTasks() != null ? plan.getTasks().size() : 0);
             planningService.saveProjectPlan(projectId, plan, userId);
+            log.info("Project plan saved successfully");
             return ResponseEntity.ok().build();
         } catch (RuntimeException ex) {
+            log.error("Error saving project plan: {}", ex.getMessage(), ex);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{projectId}/plan")
+    public ResponseEntity<ProjectPlanDTO> getProjectPlan(@PathVariable String projectId) {
+        String userId = getCurrentUserId();
+        try {
+            ProjectPlanDTO plan = planningService.getProjectPlan(projectId, userId);
+            return ResponseEntity.ok(plan);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
     }
 

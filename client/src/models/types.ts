@@ -32,6 +32,7 @@ export type Task = {
   priority: TaskPriority
   status: TaskStatus
   assignee?: string
+  module?: string
   commits: { hash: string; message: string }[]
 }
 

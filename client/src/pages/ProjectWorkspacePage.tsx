@@ -6,7 +6,7 @@ import { ProjectTabs } from '../components/ProjectTabs'
 import { TeamTab } from '../components/TeamTab'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'
-import { finalizeTasks, generateTasks } from '../apis'
+import { fetchProjectPlan, finalizeTasks, generateTasks } from '../apis'
 import { useAppState } from '../context/AppState'
 import type { Project, ProjectPlan, Task } from '../models/types'
 import { TaskPriority, TaskStatus } from '../models/types'
@@ -75,6 +75,101 @@ export function ProjectWorkspacePage() {
     []
   )
 
+  const mapPlanResponse = (response: {
+    projectId?: string
+    problemStatement?: string
+    techStack?: {
+      backend?: string
+      frontend?: string
+      database?: string
+      architecture?: string
+    }
+    features?: Array<{ key?: string; name?: string; description?: string; priority?: string }>
+    modules?: Array<{ key?: string; name?: string; description?: string }>
+    tasks?: Array<{
+      externalId?: string
+      title?: string
+      description?: string
+      priority?: string
+      status?: string
+      estimatedHours?: number
+      moduleKey?: string
+      dependsOn?: string[]
+    }>
+    risks?: Array<{ title?: string; impact?: string; mitigation?: string }>
+  }, resolvedProjectId: string, fallbackProblem: string): ProjectPlan => ({
+    projectId: response.projectId ?? resolvedProjectId,
+    problemStatement: response.problemStatement ?? fallbackProblem,
+    techStack: {
+      backend: response.techStack?.backend ?? 'Spring Boot (Java)',
+      frontend: response.techStack?.frontend ?? 'React + Tailwind + shadcn',
+      database: response.techStack?.database ?? 'MySQL/PostgreSQL',
+      architecture: response.techStack?.architecture ?? 'REST APIs',
+    },
+    features:
+      response.features?.map((feature, idx) => ({
+        key: feature.key ?? `F-${String(idx + 1).padStart(3, '0')}`,
+        name: feature.name ?? 'Feature',
+        description: feature.description ?? '',
+        priority: (feature.priority as TaskPriority) ?? TaskPriority.MEDIUM,
+      })) ?? [],
+    modules:
+      response.modules?.map((module, idx) => ({
+        key: module.key ?? `M-${String(idx + 1).padStart(3, '0')}`,
+        name: module.name ?? 'Module',
+        description: module.description ?? '',
+      })) ?? [],
+    tasks:
+      response.tasks?.map((task, idx) => ({
+        externalId: task.externalId ?? `TSK-${String(idx + 1).padStart(3, '0')}`,
+        title: task.title ?? 'Task',
+        description: task.description ?? '',
+        priority: (task.priority as TaskPriority) ?? TaskPriority.MEDIUM,
+        status: (task.status as TaskStatus) ?? TaskStatus.TODO,
+        estimatedHours: task.estimatedHours ?? undefined,
+        moduleKey: task.moduleKey ?? undefined,
+        dependsOn: task.dependsOn ?? [],
+      })) ?? [],
+    risks:
+      response.risks?.map((risk) => ({
+        title: risk.title ?? 'Risk',
+        impact: risk.impact ?? '',
+        mitigation: risk.mitigation ?? '',
+      })) ?? [],
+  })
+
+  const mapPlanTasksToBoard = (planTasks: ProjectPlan['tasks']): Task[] =>
+    planTasks.map((task) => ({
+      id: task.externalId,
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      status: task.status,
+      assignee: 'Unassigned',
+      module: task.moduleKey,
+      commits: [],
+    }))
+
+  useEffect(() => {
+    if (!project || !token) return
+    const resolvedProjectId = project.projectId ?? project.id
+    fetchProjectPlan(token, resolvedProjectId)
+      .then((response) => {
+        if (!response || !(response.tasks?.length || response.modules?.length || response.features?.length)) {
+          return
+        }
+        const nextPlan = mapPlanResponse(response, resolvedProjectId, problem)
+        setPlan(nextPlan)
+        if (nextPlan.tasks.length > 0) {
+          updateTasks(resolvedProjectId, mapPlanTasksToBoard(nextPlan.tasks))
+        }
+        if (nextPlan.problemStatement) {
+          setProblem(resolvedProjectId, nextPlan.problemStatement)
+        }
+      })
+      .catch(() => {})
+  }, [project, token])
+
   const handleGenerateTasks = () => {
     if (!project || !token) {
       console.error('[ProjectWorkspacePage] Missing project or token')
@@ -88,46 +183,7 @@ export function ProjectWorkspacePage() {
     generateTasks(token, { projectId: resolvedProjectId, problemStatement: problem })
       .then((response) => {
         console.log('[ProjectWorkspacePage] Generate tasks successful, mapping response...')
-        const nextPlan: ProjectPlan = {
-          projectId: response.projectId ?? resolvedProjectId,
-          problemStatement: response.problemStatement ?? problem,
-          techStack: {
-            backend: response.techStack?.backend ?? 'Spring Boot (Java)',
-            frontend: response.techStack?.frontend ?? 'React + Tailwind + shadcn',
-            database: response.techStack?.database ?? 'MySQL/PostgreSQL',
-            architecture: response.techStack?.architecture ?? 'REST APIs',
-          },
-          features:
-            response.features?.map((feature, idx) => ({
-              key: feature.key ?? `F-${String(idx + 1).padStart(3, '0')}`,
-              name: feature.name ?? 'Feature',
-              description: feature.description ?? '',
-              priority: (feature.priority as TaskPriority) ?? TaskPriority.MEDIUM,
-            })) ?? [],
-          modules:
-            response.modules?.map((module, idx) => ({
-              key: module.key ?? `M-${String(idx + 1).padStart(3, '0')}`,
-              name: module.name ?? 'Module',
-              description: module.description ?? '',
-            })) ?? [],
-          tasks:
-            response.tasks?.map((task, idx) => ({
-              externalId: task.externalId ?? `TSK-${String(idx + 1).padStart(3, '0')}`,
-              title: task.title ?? 'Task',
-              description: task.description ?? '',
-              priority: (task.priority as TaskPriority) ?? TaskPriority.MEDIUM,
-              status: (task.status as TaskStatus) ?? TaskStatus.TODO,
-              estimatedHours: task.estimatedHours ?? undefined,
-              moduleKey: task.moduleKey ?? undefined,
-              dependsOn: task.dependsOn ?? [],
-            })) ?? [],
-          risks:
-            response.risks?.map((risk) => ({
-              title: risk.title ?? 'Risk',
-              impact: risk.impact ?? '',
-              mitigation: risk.mitigation ?? '',
-            })) ?? [],
-        }
+        const nextPlan = mapPlanResponse(response, resolvedProjectId, problem)
         console.log('[ProjectWorkspacePage] Setting plan state with', nextPlan.tasks.length, 'tasks')
         setPlan(nextPlan)
       })
@@ -146,17 +202,17 @@ export function ProjectWorkspacePage() {
     setPlanSaving(true)
     setPlanError(null)
     try {
-      await finalizeTasks(token, resolvedProjectId, plan)
-      const mappedTasks: Task[] = plan.tasks.map((task) => ({
-        id: task.externalId,
-        title: task.title,
-        description: task.description,
-        priority: task.priority,
-        status: task.status,
-        assignee: 'Unassigned',
-        commits: [],
-      }))
-      updateTasks(resolvedProjectId, mappedTasks)
+      console.log('[ProjectWorkspacePage] handleFinalizePlan called')
+      // Ensure problemStatement is the current value, not stale
+      const planToFinalize = {
+        ...plan,
+        problemStatement: problem || plan.problemStatement
+      }
+      console.log('[ProjectWorkspacePage] Plan object:', JSON.stringify(planToFinalize, null, 2))
+      console.log('[ProjectWorkspacePage] Plan problemStatement:', planToFinalize.problemStatement)
+      await finalizeTasks(token, resolvedProjectId, planToFinalize)
+      console.log('[ProjectWorkspacePage] finalizeTasks completed successfully')
+      updateTasks(resolvedProjectId, mapPlanTasksToBoard(plan.tasks))
       setPlan(null)
     } catch (err) {
       console.error('[ProjectWorkspacePage] Failed to finalize plan', err)
@@ -164,14 +220,6 @@ export function ProjectWorkspacePage() {
     } finally {
       setPlanSaving(false)
     }
-  }
-
-  const handleMoveTask = (id: string, status: TaskStatus) => {
-    if (!projectId) return
-    updateTasks(
-      projectId,
-      projectTasks.map((task) => (task.id === id ? { ...task, status } : task))
-    )
   }
 
   const handleSaveTasks = () => {
@@ -252,7 +300,7 @@ export function ProjectWorkspacePage() {
       )}
 
       {activeTab === 'kanban' && (
-        <KanbanTab tasks={projectTasks} onMove={handleMoveTask} warnings={warnings} />
+        <KanbanTab tasks={projectTasks} warnings={warnings} />
       )}
 
       {activeTab === 'team' && <TeamTab members={members} onInvite={handleInvite} />}

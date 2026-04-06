@@ -4,7 +4,6 @@ import { TaskPriority, TaskStatus } from '../models/types'
 
 type TaskCardProps = {
   task: Task
-  onMove: (id: string, status: TaskStatus) => void
 }
 
 const badgeMap: Record<TaskPriority, 'high' | 'medium' | 'low'> = {
@@ -36,32 +35,6 @@ export function TaskCard({ task, onMove }: TaskCardProps) {
           ))}
         </div>
       )}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {task.status !== TaskStatus.TODO && (
-          <button
-            className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/70 hover:border-white/40"
-            onClick={() => onMove(task.id, TaskStatus.TODO)}
-          >
-            Move to Todo
-          </button>
-        )}
-        {task.status !== TaskStatus.IN_PROGRESS && (
-          <button
-            className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/70 hover:border-white/40"
-            onClick={() => onMove(task.id, TaskStatus.IN_PROGRESS)}
-          >
-            Move to In Progress
-          </button>
-        )}
-        {task.status !== TaskStatus.DONE && (
-          <button
-            className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/70 hover:border-white/40"
-            onClick={() => onMove(task.id, TaskStatus.DONE)}
-          >
-            Move to Done
-          </button>
-        )}
-      </div>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import com.hackassist.ai.dto.plan.ModuleDTO;
 import com.hackassist.ai.dto.plan.ProjectPlanDTO;
 import com.hackassist.ai.dto.plan.RiskDTO;
 import com.hackassist.ai.dto.plan.TaskDTO;
+import com.hackassist.ai.dto.plan.TechStackDTO;
 import com.hackassist.ai.models.Project;
 import com.hackassist.ai.models.ProjectFeature;
 import com.hackassist.ai.models.ProjectModule;
@@ -22,10 +23,20 @@ import com.hackassist.ai.repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ProjectPlanningService {
+
+    private static final TechStackDTO DEFAULT_STACK = new TechStackDTO(
+        "Spring Boot (Java)",
+        "React + Tailwind + shadcn",
+        "MySQL/PostgreSQL",
+        "REST APIs"
+    );
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
@@ -54,14 +65,27 @@ public class ProjectPlanningService {
     }
 
     public void saveProjectPlan(String projectId, ProjectPlanDTO dto, String userId) {
+        log.info("=== ProjectPlanningService.saveProjectPlan ===");
+        log.info("projectId: {}, userId: {}", projectId, userId);
         if (dto == null) {
             throw new RuntimeException("Project plan payload is required");
         }
+        log.info("Received ProjectPlanDTO - problemStatement: '{}'", dto.getProblemStatement());
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
         Project project = projectRepository.findByProjectIdAndCreatedBy(projectId, user);
         if (project == null) {
             throw new RuntimeException("Project not found or not owned by user");
+        }
+        log.info("Found project: {}", project.getName());
+
+        if (dto.getProblemStatement() != null) {
+            log.info("Setting problemStatement to: '{}'", dto.getProblemStatement());
+            project.setProblemStatement(dto.getProblemStatement());
+            projectRepository.save(project);
+            log.info("Project saved with problemStatement");
+        } else {
+            log.warn("problemStatement is NULL - not saving");
         }
 
         clearExistingPlan(project);
@@ -71,6 +95,70 @@ public class ProjectPlanningService {
         Map<String, ProjectTask> tasksByExternalId = saveTasks(project, dto.getTasks(), modulesByKey);
         saveDependencies(project, dto.getTasks(), tasksByExternalId);
         saveRisks(project, dto.getRisks());
+    }
+
+    public ProjectPlanDTO getProjectPlan(String projectId, String userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        Project project = projectRepository.findByProjectIdAndCreatedBy(projectId, user);
+        if (project == null) {
+            throw new RuntimeException("Project not found or not owned by user");
+        }
+
+        List<ModuleDTO> modules = moduleRepository.findByProject(project).stream()
+            .map((module) -> new ModuleDTO(module.getModuleKey(), module.getName(), module.getDescription()))
+            .collect(Collectors.toList());
+
+        List<FeatureDTO> features = featureRepository.findByProject(project).stream()
+            .map((feature) -> new FeatureDTO(feature.getFeatureKey(), feature.getName(), feature.getDescription(), feature.getPriority()))
+            .collect(Collectors.toList());
+
+        List<ProjectTask> taskEntities = taskRepository.findByProject(project);
+        Map<Long, String> taskIdToExternal = taskEntities.stream()
+            .collect(Collectors.toMap(ProjectTask::getId, ProjectTask::getExternalId));
+
+        Map<String, List<String>> dependencyMap = new HashMap<>();
+        for (TaskDependency dependency : dependencyRepository.findByProject(project)) {
+            String ownerExternal = taskIdToExternal.get(dependency.getTask().getId());
+            String dependsOnExternal = taskIdToExternal.get(dependency.getDependsOn().getId());
+            if (ownerExternal == null || dependsOnExternal == null) {
+                continue;
+            }
+            dependencyMap.computeIfAbsent(ownerExternal, (key) -> new java.util.ArrayList<>()).add(dependsOnExternal);
+        }
+
+        List<TaskDTO> tasks = taskEntities.stream()
+            .map((task) -> {
+                String moduleKey = task.getModules().stream()
+                    .findFirst()
+                    .map(ProjectModule::getModuleKey)
+                    .orElse(null);
+                return new TaskDTO(
+                    task.getExternalId(),
+                    task.getTitle(),
+                    task.getDescription(),
+                    task.getPriority(),
+                    task.getStatus(),
+                    task.getEstimatedHours(),
+                    moduleKey,
+                    dependencyMap.getOrDefault(task.getExternalId(), List.of())
+                );
+            })
+            .collect(Collectors.toList());
+
+        List<RiskDTO> risks = riskRepository.findByProject(project).stream()
+            .map((risk) -> new RiskDTO(risk.getTitle(), risk.getImpact(), risk.getMitigation()))
+            .collect(Collectors.toList());
+
+        return new ProjectPlanDTO(
+            project.getProjectId(),
+            project.getProblemStatement(),
+            DEFAULT_STACK,
+            features,
+            modules,
+            tasks,
+            risks
+        );
     }
 
     private void clearExistingPlan(Project project) {

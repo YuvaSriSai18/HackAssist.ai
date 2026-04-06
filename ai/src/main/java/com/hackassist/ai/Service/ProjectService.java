@@ -7,22 +7,59 @@ import com.hackassist.ai.dto.ProjectResponse;
 import com.hackassist.ai.dto.ProjectUpdateRequest;
 import com.hackassist.ai.models.Project;
 import com.hackassist.ai.models.User;
+import com.hackassist.ai.repository.GitCommitRepository;
+import com.hackassist.ai.repository.GitHubRepositoryRepository;
+import com.hackassist.ai.repository.ProjectFeatureRepository;
+import com.hackassist.ai.repository.ProjectModuleRepository;
 import com.hackassist.ai.repository.ProjectRepository;
+import com.hackassist.ai.repository.ProjectRiskRepository;
+import com.hackassist.ai.repository.ProjectTaskRepository;
+import com.hackassist.ai.repository.RiskAlertRepository;
+import com.hackassist.ai.repository.TaskDependencyRepository;
 import com.hackassist.ai.repository.UserRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProjectService implements IProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final IGitHubService gitHubService;
+    private final ProjectTaskRepository projectTaskRepository;
+    private final ProjectModuleRepository projectModuleRepository;
+    private final ProjectFeatureRepository projectFeatureRepository;
+    private final ProjectRiskRepository projectRiskRepository;
+    private final TaskDependencyRepository taskDependencyRepository;
+    private final RiskAlertRepository riskAlertRepository;
+    private final GitHubRepositoryRepository gitHubRepositoryRepository;
+    private final GitCommitRepository gitCommitRepository;
 
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository, IGitHubService gitHubService) {
+    public ProjectService(
+        ProjectRepository projectRepository,
+        UserRepository userRepository,
+        IGitHubService gitHubService,
+        ProjectTaskRepository projectTaskRepository,
+        ProjectModuleRepository projectModuleRepository,
+        ProjectFeatureRepository projectFeatureRepository,
+        ProjectRiskRepository projectRiskRepository,
+        TaskDependencyRepository taskDependencyRepository,
+        RiskAlertRepository riskAlertRepository,
+        GitHubRepositoryRepository gitHubRepositoryRepository,
+        GitCommitRepository gitCommitRepository
+    ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.gitHubService = gitHubService;
+        this.projectTaskRepository = projectTaskRepository;
+        this.projectModuleRepository = projectModuleRepository;
+        this.projectFeatureRepository = projectFeatureRepository;
+        this.projectRiskRepository = projectRiskRepository;
+        this.taskDependencyRepository = taskDependencyRepository;
+        this.riskAlertRepository = riskAlertRepository;
+        this.gitHubRepositoryRepository = gitHubRepositoryRepository;
+        this.gitCommitRepository = gitCommitRepository;
     }
 
     @Override
@@ -63,8 +100,20 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
+    @Transactional
     public void deleteProject(String projectId, String userId) {
         Project project = getOwnedProject(projectId, userId);
+
+        taskDependencyRepository.deleteByProject(project);
+        projectTaskRepository.deleteByProject(project);
+        projectModuleRepository.deleteByProject(project);
+        projectFeatureRepository.deleteByProject(project);
+        projectRiskRepository.deleteByProject(project);
+        riskAlertRepository.deleteByProject(project);
+
+        gitHubRepositoryRepository.findByProject(project).forEach((repo) -> gitCommitRepository.deleteByRepository(repo));
+        gitHubRepositoryRepository.deleteByProject(project);
+
         projectRepository.delete(project);
     }
 

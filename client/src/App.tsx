@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { Navbar } from './components/Navbar'
 import { useAppState } from './context/AppState'
 import { LandingPage } from './components/LandingPage'
@@ -10,14 +10,16 @@ import { ProfilePage } from './components/ProfilePage'
 
 function ProtectedLayout() {
   const { isAuthenticated } = useAppState()
+  const location = useLocation()
+  const isProjectWorkspace = location.pathname.startsWith('/project/')
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
   return (
-    <div className="min-h-screen bg-night text-white">
-      <Navbar />
+    <div className="bg-night text-white">
+      {!isProjectWorkspace && <Navbar />}
       <main className="mx-auto max-w-6xl px-6 py-8">
         <Outlet />
       </main>

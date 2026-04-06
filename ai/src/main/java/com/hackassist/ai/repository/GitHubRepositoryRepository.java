@@ -13,6 +13,8 @@ public interface GitHubRepositoryRepository extends JpaRepository<GitHubReposito
     List<GitHubRepository> findByUser(User user);
     
     List<GitHubRepository> findByProject(Project project);
+
+    void deleteByProject(Project project);
     
     GitHubRepository findByRepoNameAndOwner(String repoName, String owner);
 }

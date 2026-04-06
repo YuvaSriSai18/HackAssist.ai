@@ -6,9 +6,11 @@ type ProjectListProps = {
   projects: Project[]
   emptyMessage: string
   onOpen: (id: string) => void
+  onEdit: (id: string, payload: { name: string; description: string }) => Promise<void>
+  onDelete: (id: string) => Promise<void>
 }
 
-export function ProjectList({ title, projects, emptyMessage, onOpen }: ProjectListProps) {
+export function ProjectList({ title, projects, emptyMessage, onOpen, onEdit, onDelete }: ProjectListProps) {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
@@ -22,7 +24,13 @@ export function ProjectList({ title, projects, emptyMessage, onOpen }: ProjectLi
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} onOpen={onOpen} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onOpen={onOpen}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           ))}
         </div>
       )}

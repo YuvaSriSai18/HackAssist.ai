@@ -3,9 +3,19 @@ import { useNavigate } from 'react-router-dom'
 import { CreateProjectModal } from '../components/CreateProjectModal'
 import { ProjectList } from '../components/ProjectList'
 import { useAppState } from '../context/AppState'
+import type { Project } from '../models/types'
 
 export function ProjectsPage() {
-  const { projects, sharedProjects, createProject, selectProject, loadProjects, token } = useAppState()
+  const {
+    projects,
+    sharedProjects,
+    createProject,
+    selectProject,
+    loadProjects,
+    updateProject,
+    deleteProject,
+    token,
+  } = useAppState()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -18,9 +28,18 @@ export function ProjectsPage() {
     navigate(`/project/${projectId}`)
   }
 
-  const handleCreate = async (payload: { name: string; description: string }) => {
+  const handleCreate = async (payload: { name: string; description: string }): Promise<Project> => {
     const project = await createProject(payload)
     navigate(`/project/${project.id}`)
+    return project
+  }
+
+  const handleEdit = async (projectId: string, payload: { name: string; description: string }) => {
+    await updateProject(projectId, payload)
+  }
+
+  const handleDelete = async (projectId: string) => {
+    await deleteProject(projectId)
   }
 
   return (
@@ -37,12 +56,16 @@ export function ProjectsPage() {
         projects={projects}
         emptyMessage="No projects yet. Create one to get started."
         onOpen={openProject}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
       <ProjectList
         title="Shared With Me"
         projects={sharedProjects}
         emptyMessage="No shared workspaces yet."
         onOpen={openProject}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   )

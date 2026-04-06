@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from './ui/dialog'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './ui/accordion'
 import type { Task } from '../models/types'
 import { TaskPriority, TaskStatus } from '../models/types'
 
@@ -33,6 +34,16 @@ export function TaskEditor({ tasks, onUpdate, onSave }: TaskEditorProps) {
     const total = tasks.length
     const done = tasks.filter((task) => task.status === TaskStatus.DONE).length
     return { total, done }
+  }, [tasks])
+
+  const groupedTasks = useMemo(() => {
+    const groups: Record<string, Task[]> = {}
+    for (const task of tasks) {
+      const key = task.module ?? 'Unassigned'
+      if (!groups[key]) groups[key] = []
+      groups[key].push(task)
+    }
+    return groups
   }, [tasks])
 
   const updateTask = (updated: Task) => {
@@ -103,97 +114,114 @@ export function TaskEditor({ tasks, onUpdate, onSave }: TaskEditorProps) {
               No tasks yet. Generate tasks or add a new one.
             </div>
           )}
-          {tasks.map((task) => (
-            <div key={task.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-base font-semibold text-white">{task.title}</h4>
-                    <Badge variant={priorityMap[task.priority]}>{task.priority}</Badge>
-                  </div>
-                  <p className="text-sm text-white/60">{task.description}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-white/40">
-                    <span>Status: {task.status}</span>
-                    <span>Owner: {task.assignee ?? 'Unassigned'}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" onClick={() => setEditingTask(task)}>
-                        <Pencil size={16} />
-                        Edit
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Task</DialogTitle>
-                        <DialogDescription>Update the details for this work item.</DialogDescription>
-                      </DialogHeader>
-                      {editingTask && (
-                        <div className="space-y-3">
-                          <Input
-                            value={editingTask.title}
-                            onChange={(event) =>
-                              setEditingTask({ ...editingTask, title: event.target.value })
-                            }
-                          />
-                          <Textarea
-                            value={editingTask.description}
-                            onChange={(event) =>
-                              setEditingTask({ ...editingTask, description: event.target.value })
-                            }
-                          />
-                          <select
-                            className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white"
-                            value={editingTask.priority}
-                            onChange={(event) =>
-                              setEditingTask({
-                                ...editingTask,
-                                priority: event.target.value as TaskPriority,
-                              })
-                            }
-                          >
-                            <option value={TaskPriority.HIGH}>High</option>
-                            <option value={TaskPriority.MEDIUM}>Medium</option>
-                            <option value={TaskPriority.LOW}>Low</option>
-                          </select>
-                          <select
-                            className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white"
-                            value={editingTask.status}
-                            onChange={(event) =>
-                              setEditingTask({
-                                ...editingTask,
-                                status: event.target.value as TaskStatus,
-                              })
-                            }
-                          >
-                            <option value={TaskStatus.TODO}>Todo</option>
-                            <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
-                            <option value={TaskStatus.DONE}>Done</option>
-                          </select>
-                          <Button
-                            variant="accent"
-                            onClick={() => {
-                              updateTask(editingTask)
-                              setEditingTask(null)
-                            }}
-                          >
-                            <BadgeCheck size={16} />
-                            Save Changes
-                          </Button>
+          {tasks.length > 0 && (
+            <Accordion type="single" collapsible className='space-y-3'>
+              {Object.entries(groupedTasks).map(([moduleKey, moduleTasks]) => (
+                <AccordionItem key={moduleKey} value={moduleKey}>
+                  <AccordionTrigger>
+                    <span className="font-semibold">
+                      {moduleKey} ({moduleTasks.length})
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3">
+                      {moduleTasks.map((task) => (
+                        <div key={task.id} className="rounded-lg border border-white/10 bg-white/5 p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-4">
+                            <div className="space-y-2 flex-1">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-base font-semibold text-white">{task.title}</h4>
+                                <Badge variant={priorityMap[task.priority]}>{task.priority}</Badge>
+                              </div>
+                              <p className="text-sm text-white/60">{task.description}</p>
+                              <div className="flex flex-wrap gap-3 text-xs text-white/40">
+                                <span>Status: {task.status}</span>
+                                <span>Owner: {task.assignee ?? 'Unassigned'}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button variant="ghost" size="sm" onClick={() => setEditingTask(task)}>
+                                    <Pencil size={16} />
+                                    Edit
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Edit Task</DialogTitle>
+                                    <DialogDescription>Update the details for this work item.</DialogDescription>
+                                  </DialogHeader>
+                                  {editingTask && (
+                                    <div className="space-y-3">
+                                      <Input
+                                        value={editingTask.title}
+                                        onChange={(event) =>
+                                          setEditingTask({ ...editingTask, title: event.target.value })
+                                        }
+                                      />
+                                      <Textarea
+                                        value={editingTask.description}
+                                        onChange={(event) =>
+                                          setEditingTask({ ...editingTask, description: event.target.value })
+                                        }
+                                      />
+                                      <select
+                                        className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white"
+                                        value={editingTask.priority}
+                                        onChange={(event) =>
+                                          setEditingTask({
+                                            ...editingTask,
+                                            priority: event.target.value as TaskPriority,
+                                          })
+                                        }
+                                      >
+                                        <option value={TaskPriority.HIGH}>High</option>
+                                        <option value={TaskPriority.MEDIUM}>Medium</option>
+                                        <option value={TaskPriority.LOW}>Low</option>
+                                      </select>
+                                      <select
+                                        className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white"
+                                        value={editingTask.status}
+                                        onChange={(event) =>
+                                          setEditingTask({
+                                            ...editingTask,
+                                            status: event.target.value as TaskStatus,
+                                          })
+                                        }
+                                      >
+                                        <option value={TaskStatus.TODO}>Todo</option>
+                                        <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
+                                        <option value={TaskStatus.DONE}>Done</option>
+                                      </select>
+                                      <Button
+                                        variant="accent"
+                                        onClick={() => {
+                                          updateTask(editingTask)
+                                          setEditingTask(null)
+                                        }}
+                                      >
+                                        <BadgeCheck size={16} />
+                                        Save Changes
+                                      </Button>
+                                    </div>
+                                  )}
+                                </DialogContent>
+                              </Dialog>
+                              <Button variant="ghost" size="sm" onClick={() => deleteTask(task.id)}>
+                                <Trash2 size={16} />
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
                         </div>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                  <Button variant="ghost" onClick={() => deleteTask(task.id)}>
-                    <Trash2 size={16} />
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">

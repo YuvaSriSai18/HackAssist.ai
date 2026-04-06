@@ -11,6 +11,8 @@ import java.util.List;
 public interface GitCommitRepository extends JpaRepository<GitCommit, Long> {
     
     List<GitCommit> findByRepository(GitHubRepository repository);
+
+    void deleteByRepository(GitHubRepository repository);
     
     List<GitCommit> findByRepositoryOrderByCommitDateDesc(GitHubRepository repository);
     
