@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Check;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "risk_alerts")
+@Check(constraints = "risk_type in ('NO_COMMITS_IN_HOURS','TOO_MANY_PENDING_TASKS','MISSED_DEADLINE','TEAM_MEMBER_INACTIVE','LOW_COMMIT_FREQUENCY','INCOMPLETE_TASK_DESCRIPTION') AND severity in ('LOW','MEDIUM','HIGH','CRITICAL') AND status in ('ACTIVE','ACKNOWLEDGED','RESOLVED')")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

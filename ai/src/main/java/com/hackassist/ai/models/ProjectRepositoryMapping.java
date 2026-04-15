@@ -22,7 +22,7 @@ public class ProjectRepositoryMapping {
     @Column(name = "webhook_id", nullable = true)
     private Long webhookId;
 
-    @Column(name = "webhook_enabled", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "webhook_enabled", nullable = false)
     private Boolean webhookEnabled = false;
 
     @Column(name = "webhook_created_at", nullable = true)

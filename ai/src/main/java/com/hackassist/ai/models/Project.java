@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Check;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "projects")
+@Check(constraints = "project_status in ('ACTIVE','COMPLETED','ARCHIVED','ON_HOLD')")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class Project {
     
     @Column(nullable = false)
     private String name;
-    
+
     @Column(columnDefinition = "TEXT")
     private String description;
     
@@ -43,7 +45,7 @@ public class Project {
     @Column(name = "github_repo_url")
     private String githubRepoUrl;
 
-    @Column(name = "github_repo_locked", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "github_repo_locked", nullable = false)
     private Boolean githubRepoLocked = false;
     
     @Column(name = "project_status")
