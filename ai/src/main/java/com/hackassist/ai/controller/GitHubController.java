@@ -113,7 +113,9 @@ public class GitHubController {
 
         saveAuthorizedClient(uid, accessToken, expiresAt);
 
-        String frontendRedirect = "http://localhost:5173/auth/callback?github=connected";
+        String frontendRedirect = System.getenv("FRONTEND_BASE_URL") != null ? 
+            System.getenv("FRONTEND_BASE_URL") + "/auth/callback?github=connected" : 
+            "http://localhost:5173/auth/callback?github=connected";
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", frontendRedirect);
         return new ResponseEntity<>(headers, org.springframework.http.HttpStatus.FOUND);

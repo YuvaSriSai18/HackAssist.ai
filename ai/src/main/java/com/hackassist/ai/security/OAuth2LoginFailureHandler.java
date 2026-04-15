@@ -14,6 +14,9 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
+
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         org.springframework.security.core.AuthenticationException exception)
@@ -25,7 +28,7 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
         exception.printStackTrace();
         
         String error = URLEncoder.encode(exception.getMessage(), StandardCharsets.UTF_8);
-        String redirectUrl = "http://localhost:5173/auth/callback?error=" + error;
+        String redirectUrl = frontendBaseUrl + "/auth/callback?error=" + error;
         
         log.error("Redirecting to frontend with error: {}", redirectUrl);
         response.sendRedirect(redirectUrl);

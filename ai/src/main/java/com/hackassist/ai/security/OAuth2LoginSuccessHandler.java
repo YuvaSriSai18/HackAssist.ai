@@ -23,6 +23,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -80,7 +83,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String token = tokenProvider.generateToken(uid, email);
 
-        String redirectUrl = "http://localhost:5173/auth/callback?token="
+        String redirectUrl = frontendBaseUrl + "/auth/callback?token="
             + URLEncoder.encode(token, StandardCharsets.UTF_8)
             + "&user=" + URLEncoder.encode(uid, StandardCharsets.UTF_8)
             + "&email=" + URLEncoder.encode(email, StandardCharsets.UTF_8)
@@ -88,7 +91,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             + "&picture=" + URLEncoder.encode(picture == null ? "" : picture, StandardCharsets.UTF_8);
 
         log.info("✓ OAuth2 authentication successful!");
-        log.info("Redirecting to frontend: http://localhost:5173/auth/callback");
+        log.info("Redirecting to frontend: {}/auth/callback", frontendBaseUrl);
         response.sendRedirect(redirectUrl);
     }
 }
