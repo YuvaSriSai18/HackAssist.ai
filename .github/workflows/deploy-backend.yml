@@ -1,14 +1,6 @@
 name: Build and Push Backend to Docker Hub
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'ai/**'
-      - 'Dockerfile'
-      - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
 env:
@@ -42,11 +34,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
             type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
