@@ -11,7 +11,7 @@ import com.hackassist.ai.models.RiskType;
 import com.hackassist.ai.models.AlertStatus;
 import com.hackassist.ai.repository.ProjectRepository;
 import com.hackassist.ai.repository.RiskAlertRepository;
-import com.hackassist.ai.repository.TaskRepository;
+import com.hackassist.ai.repository.ProjectTaskRepository;
 import com.hackassist.ai.repository.GitCommitRepository;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
@@ -31,7 +31,7 @@ public class IntelligenceService implements IIntelligenceService {
     private RiskAlertRepository riskAlertRepository;
     
     @Autowired
-    private TaskRepository taskRepository;
+    private ProjectTaskRepository projectTaskRepository;
     
     @Autowired
     private GitCommitRepository gitCommitRepository;
@@ -61,8 +61,11 @@ public class IntelligenceService implements IIntelligenceService {
         }
         
         // Check for too many pending tasks
-        long pendingCount = taskRepository.findAll().stream()
-            .filter(t -> t.getStatus().name().equals("PENDING"))
+        long pendingCount = projectTaskRepository.findAll().stream()
+            .filter(t -> {
+                String status = t.getStatus();
+                return status != null && ("TODO".equalsIgnoreCase(status) || "PENDING".equalsIgnoreCase(status));
+            })
             .count();
         if (pendingCount > 10) {
             RiskAlert alert = new RiskAlert();

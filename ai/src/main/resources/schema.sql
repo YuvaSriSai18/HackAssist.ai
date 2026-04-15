@@ -11,3 +11,13 @@ CREATE TABLE IF NOT EXISTS oauth2_authorized_client (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (client_registration_id, principal_name)
 );
+
+-- Webhook Fields for ProjectRepositoryMapping
+-- Auto-created by Hibernate, documented here for reference
+-- ALTER TABLE project_repository_mapping ADD COLUMN webhook_id BIGINT NULL;
+-- ALTER TABLE project_repository_mapping ADD COLUMN webhook_enabled TINYINT(1) DEFAULT 0;
+-- ALTER TABLE project_repository_mapping ADD COLUMN webhook_created_at TIMESTAMP NULL;
+
+-- Repository Lock Field for Projects
+-- Auto-created by Hibernate but documented here for reference
+-- ALTER TABLE projects ADD COLUMN github_repo_locked TINYINT(1) DEFAULT 0;

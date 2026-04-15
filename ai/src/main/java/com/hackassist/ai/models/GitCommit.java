@@ -35,7 +35,7 @@ public class GitCommit {
     
     @ManyToOne
     @JoinColumn(name = "task_id")
-    private Tasks mappedTask;
+    private ProjectTask mappedTask;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;

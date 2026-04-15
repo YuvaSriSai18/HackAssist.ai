@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hackassist.ai.dto.ProgressDTO;
 import com.hackassist.ai.models.Project;
-import com.hackassist.ai.models.Tasks;
-import com.hackassist.ai.models.TaskStatus;
+import com.hackassist.ai.models.ProjectTask;
 import com.hackassist.ai.repository.ProjectRepository;
-import com.hackassist.ai.repository.TaskRepository;
+import com.hackassist.ai.repository.ProjectTaskRepository;
 import com.hackassist.ai.repository.GitCommitRepository;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
@@ -21,7 +20,7 @@ public class ProgressService implements IProgressService {
     private ProjectRepository projectRepository;
     
     @Autowired
-    private TaskRepository taskRepository;
+    private ProjectTaskRepository projectTaskRepository;
     
     @Autowired
     private GitCommitRepository gitCommitRepository;
@@ -42,9 +41,9 @@ public class ProgressService implements IProgressService {
         progressDTO.setTaskCompletionPercentage(taskCompletion);
         progressDTO.setCommitContributionPercentage(commitContribution);
         
-        List<Tasks> allTasks = taskRepository.findAll();
+        List<ProjectTask> allTasks = projectTaskRepository.findByProject(project.get());
         int completedTasks = (int) allTasks.stream()
-            .filter(t -> t.getStatus() == TaskStatus.COMPLETED)
+            .filter(t -> "COMPLETED".equalsIgnoreCase(t.getStatus()))
             .count();
         
         progressDTO.setTotalTasks(allTasks.size());
@@ -57,13 +56,14 @@ public class ProgressService implements IProgressService {
     
     @Override
     public Double calculateTaskCompletionPercentage(Long projectId) {
-        List<Tasks> allTasks = taskRepository.findAll();
+        List<ProjectTask> allTasks = projectTaskRepository.findByProject(projectRepository.findById(projectId)
+            .orElseThrow(() -> new RuntimeException("Project not found")));
         if (allTasks.isEmpty()) {
             return 0.0;
         }
         
         long completedCount = allTasks.stream()
-            .filter(t -> t.getStatus() == TaskStatus.COMPLETED)
+            .filter(t -> "COMPLETED".equalsIgnoreCase(t.getStatus()))
             .count();
         
         return (completedCount * 100.0) / allTasks.size();

@@ -42,6 +42,9 @@ public class Project {
     
     @Column(name = "github_repo_url")
     private String githubRepoUrl;
+
+    @Column(name = "github_repo_locked", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean githubRepoLocked = false;
     
     @Column(name = "project_status")
     @Enumerated(EnumType.STRING)
@@ -64,5 +67,13 @@ public class Project {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public Boolean getGithubRepoLocked() {
+        return githubRepoLocked;
+    }
+
+    public void setGithubRepoLocked(Boolean githubRepoLocked) {
+        this.githubRepoLocked = githubRepoLocked;
     }
 }

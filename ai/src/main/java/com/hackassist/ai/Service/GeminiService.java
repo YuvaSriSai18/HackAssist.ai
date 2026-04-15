@@ -2,6 +2,7 @@ package com.hackassist.ai.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -39,6 +40,33 @@ public class GeminiService {
             log.warn("Primary Gemini model failed, attempting fallback: {}", ex.getMessage());
             String payload = buildRequestPayload(prompt);
             return callGemini(FALLBACK_MODEL, payload, prompt == null ? "" : prompt.trim());
+        }
+    }
+
+    public String generate(String prompt) {
+        String response = generateContent(prompt);
+        return cleanupMarkdown(response);
+    }
+
+    public <T> T generateJson(String prompt, Class<T> valueType) {
+        String response = generate(prompt);
+        String json = extractJson(response);
+        try {
+            return objectMapper.readValue(json, valueType);
+        } catch (Exception ex) {
+            log.error("Gemini JSON parse failed: {}", ex.getMessage(), ex);
+            throw new RuntimeException("Invalid Gemini JSON response");
+        }
+    }
+
+    public <T> T generateJson(String prompt, TypeReference<T> valueType) {
+        String response = generate(prompt);
+        String json = extractJson(response);
+        try {
+            return objectMapper.readValue(json, valueType);
+        } catch (Exception ex) {
+            log.error("Gemini JSON parse failed: {}", ex.getMessage(), ex);
+            throw new RuntimeException("Invalid Gemini JSON response");
         }
     }
 
@@ -113,5 +141,46 @@ public class GeminiService {
             log.error("Unable to parse Gemini response: {}", ex.getMessage());
             throw new RuntimeException("Unable to parse Gemini response: " + ex.getMessage());
         }
+    }
+
+    private String cleanupMarkdown(String raw) {
+        if (raw == null) {
+            return "";
+        }
+        return raw
+            .replace("```json", "")
+            .replace("```", "")
+            .trim();
+    }
+
+    private String extractJson(String rawResponse) {
+        String cleaned = cleanupMarkdown(rawResponse);
+        if (cleaned.isBlank()) {
+            throw new RuntimeException("Gemini response is empty");
+        }
+
+        // Find JSON start: either { for object or [ for array
+        int startBrace = cleaned.indexOf('{');
+        int startBracket = cleaned.indexOf('[');
+        
+        int start = -1;
+        int end = -1;
+        
+        // Determine which start position is first and valid
+        if (startBracket >= 0 && (startBrace < 0 || startBracket < startBrace)) {
+            // Array JSON starts with [
+            start = startBracket;
+            end = cleaned.lastIndexOf(']');
+        } else if (startBrace >= 0) {
+            // Object JSON starts with {
+            start = startBrace;
+            end = cleaned.lastIndexOf('}');
+        }
+        
+        if (start < 0 || end < 0 || end <= start) {
+            throw new RuntimeException("Gemini response does not contain valid JSON");
+        }
+
+        return cleaned.substring(start, end + 1).trim();
     }
 }

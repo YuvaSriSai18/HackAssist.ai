@@ -47,7 +47,7 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/oauth2/**", "/login/**", "/auth/**", "/error", "/github/connect", "/github/callback")
+                    .requestMatchers("/", "/oauth2/**", "/login/**", "/auth/**", "/error", "/github/connect", "/github/callback", "/webhook/github")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2

@@ -32,6 +32,12 @@ public class ProjectTask {
 
     private Integer estimatedHours;
 
+    @Column(name = "progress")
+    private Integer progress;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
@@ -93,6 +99,12 @@ public class ProjectTask {
 
     public Integer getEstimatedHours() { return estimatedHours; }
     public void setEstimatedHours(Integer estimatedHours) { this.estimatedHours = estimatedHours; }
+
+    public Integer getProgress() { return progress; }
+    public void setProgress(Integer progress) { this.progress = progress; }
+
+    public LocalDateTime getCompletedAt() { return completedAt; }
+    public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
 
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
