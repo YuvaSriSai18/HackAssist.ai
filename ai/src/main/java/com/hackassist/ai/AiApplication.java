@@ -15,11 +15,15 @@ public class AiApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(AiApplication.class, args);
+		String backendBaseUrl = System.getenv("BACKEND_BASE_URL");
+		if (backendBaseUrl == null || backendBaseUrl.isEmpty()) {
+			backendBaseUrl = "http://localhost:8080";
+		}
 		logger.info("===========================================");
 		logger.info("🚀 AI-Powered Hackathon Assistant Started!");
 		logger.info("===========================================");
-		logger.info("Server running on: http://localhost:8080");
-		logger.info("API Base URL: http://localhost:8080/api");
+		logger.info("Server running on: " + backendBaseUrl);
+		logger.info("API Base URL: " + backendBaseUrl + "/api");
 		logger.info("===========================================");
 	}
 

@@ -30,6 +30,9 @@ public class OAuth2ClientConfig {
     @Value("${GITHUB_CLIENT_SECRET:}")
     private String githubClientSecret;
 
+    @Value("${BACKEND_BASE_URL:http://localhost:8080}")
+    private String backendBaseUrl;
+
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
         log.info("============ OAuth2ClientConfig: Initializing ClientRegistrationRepository ============");
@@ -70,7 +73,7 @@ public class OAuth2ClientConfig {
                 .clientSecret(googleClientSecret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("http://localhost:8080/login/oauth2/code/google")
+                .redirectUri(backendBaseUrl + "/login/oauth2/code/google")
                 .scope("openid", "profile", "email")
                 .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
                 .tokenUri("https://oauth2.googleapis.com/token")
@@ -91,7 +94,7 @@ public class OAuth2ClientConfig {
                 .clientSecret(githubClientSecret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("http://localhost:8080/login/oauth2/code/github")
+                .redirectUri(backendBaseUrl + "/login/oauth2/code/github")
                 .scope("read:user", "repo")
                 .authorizationUri("https://github.com/login/oauth/authorize")
                 .tokenUri("https://github.com/login/oauth/access_token")

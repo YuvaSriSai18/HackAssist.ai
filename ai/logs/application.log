@@ -11018,3 +11018,9 @@ Caused by: org.postgresql.util.PSQLException: ERROR: relation "projects" does no
 2026-04-15T14:48:54.962+05:30  INFO 17056 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : Server running on: http://localhost:8080
 2026-04-15T14:48:54.962+05:30  INFO 17056 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : API Base URL: http://localhost:8080/api
 2026-04-15T14:48:54.962+05:30  INFO 17056 --- [hackassist.ai] [main] com.hackassist.ai.AiApplication          : ===========================================
+2026-04-15T15:50:35.244+05:30  WARN 17056 --- [hackassist.ai] [HikariPool-1:housekeeper] com.zaxxer.hikari.pool.PoolBase          : HikariPool-1 - Failed to validate connection org.postgresql.jdbc.PgConnection@1d61bc2b (This connection has been closed.). Possibly consider using a shorter maxLifetime value.
+2026-04-15T15:52:24.676+05:30  INFO 17056 --- [hackassist.ai] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-15T15:52:24.699+05:30  INFO 17056 --- [hackassist.ai] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-04-15T15:52:24.722+05:30  INFO 17056 --- [hackassist.ai] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-15T15:52:24.747+05:30  INFO 17056 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-15T15:52:28.716+05:30  INFO 17056 --- [hackassist.ai] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

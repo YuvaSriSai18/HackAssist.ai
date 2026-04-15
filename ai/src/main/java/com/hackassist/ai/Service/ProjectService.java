@@ -43,8 +43,12 @@ public class ProjectService implements IProjectService {
     private final GitCommitRepository gitCommitRepository;
     private final ProjectRepositoryMappingRepository projectRepositoryMappingRepository;
 
-    @Value("${app.webhook.callback-url:http://localhost:8080/webhook/github}")
-    private String webhookCallbackUrl;
+    @Value("${BACKEND_BASE_URL:http://localhost:8080}")
+    private String backendBaseUrl;
+
+    private String getWebhookCallbackUrl() {
+        return backendBaseUrl + "/webhook/github";
+    }
 
     public ProjectService(
         ProjectRepository projectRepository,
@@ -182,7 +186,7 @@ public class ProjectService implements IProjectService {
 
         // Create webhook via GitHub API (no secret - verification by repo mapping only)
         try {
-            Long webhookId = gitHubService.createWebhook(userId, owner, repo, webhookCallbackUrl);
+            Long webhookId = gitHubService.createWebhook(userId, owner, repo, getWebhookCallbackUrl());
             
             // Store webhook metadata (no secrets stored)
             ProjectRepositoryMapping mapping = projectRepositoryMappingRepository
