@@ -1,0 +1,14 @@
+.git
+.gitignore
+.vscode
+.DS_Store
+node_modules
+*.log
+.env
+.env.local
+target
+.mvn/wrapper/maven-wrapper.jar
+mvnw.cmd
+README.md
+docker-compose.yml
+deployment.txt
