@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Copy, Presentation, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from './ui/dialog'
-import type { Task } from './TaskEditor'
+import type { Task } from '../models/types'
 
 type PresentationModalProps = {
   problem: string

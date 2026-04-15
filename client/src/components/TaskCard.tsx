@@ -1,6 +1,6 @@
 import { Badge } from './ui/badge'
 import type { Task } from '../models/types'
-import { TaskPriority, TaskStatus } from '../models/types'
+import { TaskPriority } from '../models/types'
 
 type TaskCardProps = {
   task: Task
@@ -12,7 +12,7 @@ const badgeMap: Record<TaskPriority, 'high' | 'medium' | 'low'> = {
   [TaskPriority.LOW]: 'low',
 }
 
-export function TaskCard({ task, onMove }: TaskCardProps) {
+export function TaskCard({ task }: TaskCardProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
       <div className="flex items-center justify-between">

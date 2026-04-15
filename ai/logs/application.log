@@ -8749,3 +8749,19 @@ Return JSON:
 2026-04-15T12:28:12.607+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-9] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: SecurityContext set for user: 112691580169249315003
 2026-04-15T12:28:12.610+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-9] c.h.ai.security.JwtTokenProvider         : ✓ JWT token validated successfully
 2026-04-15T12:28:12.611+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-9] c.h.ai.security.JwtTokenProvider         : Extracted uid from token: 112691580169249315003
+2026-04-15T12:33:37.021+05:30  INFO 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: GET /github/repos
+2026-04-15T12:33:37.021+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: JWT token found, validating...
+2026-04-15T12:33:37.022+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtTokenProvider         : ✓ JWT token validated successfully
+2026-04-15T12:33:37.023+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtTokenProvider         : Extracted uid from token: 112691580169249315003
+2026-04-15T12:33:37.023+05:30  INFO 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtAuthenticationFilter  : ✓ JwtAuthenticationFilter: JWT validated for user: 112691580169249315003
+2026-04-15T12:33:37.023+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: SecurityContext set for user: 112691580169249315003
+2026-04-15T12:33:37.026+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtTokenProvider         : ✓ JWT token validated successfully
+2026-04-15T12:33:37.026+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-7] c.h.ai.security.JwtTokenProvider         : Extracted uid from token: 112691580169249315003
+2026-04-15T12:33:39.865+05:30  INFO 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: GET /github/repos
+2026-04-15T12:33:39.865+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: JWT token found, validating...
+2026-04-15T12:33:39.866+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : ✓ JWT token validated successfully
+2026-04-15T12:33:39.866+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : Extracted uid from token: 112691580169249315003
+2026-04-15T12:33:39.866+05:30  INFO 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtAuthenticationFilter  : ✓ JwtAuthenticationFilter: JWT validated for user: 112691580169249315003
+2026-04-15T12:33:39.866+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtAuthenticationFilter  : JwtAuthenticationFilter: SecurityContext set for user: 112691580169249315003
+2026-04-15T12:33:39.869+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : ✓ JWT token validated successfully
+2026-04-15T12:33:39.870+05:30 DEBUG 2304 --- [hackassist.ai] [http-nio-8080-exec-3] c.h.ai.security.JwtTokenProvider         : Extracted uid from token: 112691580169249315003

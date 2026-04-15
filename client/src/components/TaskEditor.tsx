@@ -24,7 +24,11 @@ const priorityMap: Record<TaskPriority, 'high' | 'medium' | 'low'> = {
 
 export function TaskEditor({ tasks, onUpdate, onSave }: TaskEditorProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [newTask, setNewTask] = useState({
+  const [newTask, setNewTask] = useState<{
+    title: string
+    description: string
+    priority: TaskPriority
+  }>({
     title: '',
     description: '',
     priority: TaskPriority.MEDIUM,
